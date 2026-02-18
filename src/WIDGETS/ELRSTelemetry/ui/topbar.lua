@@ -47,7 +47,7 @@ function TopBarUI.build(w, h)
               return "--"
             end
             local tlm = Telemetry.readLink()
-            return table.concat({"LQ ", tostring(tlm.rqly or 0), "%"})
+            return table.concat({ "LQ ", tostring(tlm.rqly or 0), "%" })
           end,
         },
         {
@@ -72,7 +72,7 @@ function TopBarUI.build(w, h)
             if rssi == nil then
               return ""
             end
-            return table.concat({tostring(rssi), "dBm"})
+            return table.concat({ tostring(rssi), "dBm" })
           end,
         },
       },

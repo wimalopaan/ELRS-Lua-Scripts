@@ -11,65 +11,65 @@ local Protocol = {
 
   -- CRSF Field Type Constants
   CRSF = {
-    UINT8          = 0,
-    INT8           = 1,
-    UINT16         = 2,
-    INT16          = 3,
-    UINT32         = 4,
-    INT32          = 5,
-    UINT64         = 6,
-    INT64          = 7,
-    FLOAT          = 8,
+    UINT8 = 0,
+    INT8 = 1,
+    UINT16 = 2,
+    INT16 = 3,
+    UINT32 = 4,
+    INT32 = 5,
+    UINT64 = 6,
+    INT64 = 7,
+    FLOAT = 8,
     TEXT_SELECTION = 9,
-    STRING         = 10,
-    FOLDER         = 11,
-    INFO           = 12,
-    COMMAND        = 13,
+    STRING = 10,
+    FOLDER = 11,
+    INFO = 12,
+    COMMAND = 13,
     -- Internal/extended types (not in official CRSF protocol)
-    BACK_EXIT      = 14,
-    DEVICE         = 15,
-    DEVICE_FOLDER  = 16,
+    BACK_EXIT = 14,
+    DEVICE = 15,
+    DEVICE_FOLDER = 16,
 
     -- Frame types
-    FRAMETYPE_DEVICE_PING              = 0x28,
-    FRAMETYPE_DEVICE_INFO              = 0x29,
+    FRAMETYPE_DEVICE_PING = 0x28,
+    FRAMETYPE_DEVICE_INFO = 0x29,
     FRAMETYPE_PARAMETER_SETTINGS_ENTRY = 0x2B,
-    FRAMETYPE_PARAMETER_READ           = 0x2C,
-    FRAMETYPE_PARAMETER_WRITE          = 0x2D,
-    FRAMETYPE_ELRS_STATUS              = 0x2E,
+    FRAMETYPE_PARAMETER_READ = 0x2C,
+    FRAMETYPE_PARAMETER_WRITE = 0x2D,
+    FRAMETYPE_ELRS_STATUS = 0x2E,
 
     -- Addresses
-    ADDRESS_BROADCAST          = 0x00,
-    ADDRESS_RADIO_TRANSMITTER  = 0xEA,
-    ADDRESS_CRSF_RECEIVER      = 0xEC,
-    ADDRESS_CRSF_TRANSMITTER   = 0xEE,
-    ADDRESS_ELRS_LUA           = 0xEF,
+    ADDRESS_BROADCAST = 0x00,
+    ADDRESS_RADIO_TRANSMITTER = 0xEA,
+    ADDRESS_CRSF_RECEIVER = 0xEC,
+    ADDRESS_CRSF_TRANSMITTER = 0xEE,
+    ADDRESS_ELRS_LUA = 0xEF,
 
     -- ELRS identification
-    ELRS_SERIAL_ID             = 0x454C5253,
+    ELRS_SERIAL_ID = 0x454C5253,
 
     -- ELRS flags: bits 0-1 are status (connected, status1),
     -- bits 2-4 are warnings (model match, armed, warning1),
     -- bits 5-7 are critical errors (error connected, error baudrate, critical2)
-    ELRS_FLAGS_STATUS_MASK = 0x03,       -- bits 0-1: status flags only
+    ELRS_FLAGS_STATUS_MASK = 0x03, -- bits 0-1: status flags only
     ELRS_FLAGS_WARNING_THRESHOLD = 0x1F, -- bits 5+: critical error flags
 
     -- Command steps (sent as last byte in PARAMETER_WRITE for COMMAND fields)
-    CMD_IDLE       = 0,
-    CMD_CLICK      = 1,
-    CMD_EXECUTING  = 2,
+    CMD_IDLE = 0,
+    CMD_CLICK = 1,
+    CMD_EXECUTING = 2,
     CMD_ASKCONFIRM = 3,
-    CMD_CONFIRMED  = 4,
-    CMD_CANCEL     = 5,
-    CMD_QUERY      = 6,
+    CMD_CONFIRMED = 4,
+    CMD_CANCEL = 5,
+    CMD_QUERY = 6,
   },
 
   -- Handlers dispatch table (populated after function definitions)
   handlers = {},
 
   -- Device identity (used in every CRSF frame) -- defaults to TX module + ELRS Lua
-  deviceId = 0xEE,   -- ADDRESS_CRSF_TRANSMITTER (can't self-ref before table is created)
-  handsetId = 0xEF,  -- ADDRESS_ELRS_LUA
+  deviceId = 0xEE, -- ADDRESS_CRSF_TRANSMITTER (can't self-ref before table is created)
+  handsetId = 0xEF, -- ADDRESS_ELRS_LUA
   deviceName = nil,
   deviceIsELRS_TX = nil,
 
@@ -151,7 +151,10 @@ function Protocol.push(command, data)
 end
 
 function Protocol.pingDevices()
-  Protocol.push(Protocol.CRSF.FRAMETYPE_DEVICE_PING, { Protocol.CRSF.ADDRESS_BROADCAST, Protocol.CRSF.ADDRESS_RADIO_TRANSMITTER })
+  Protocol.push(
+    Protocol.CRSF.FRAMETYPE_DEVICE_PING,
+    { Protocol.CRSF.ADDRESS_BROADCAST, Protocol.CRSF.ADDRESS_RADIO_TRANSMITTER }
+  )
 end
 
 -- Check connection state from elrsFlags
@@ -191,7 +194,8 @@ function Protocol.setDevice(device)
   Protocol.deviceName = device.name
   Protocol.fieldsCount = device.fieldCount
   Protocol.deviceIsELRS_TX = device.isElrs and device.id == Protocol.CRSF.ADDRESS_CRSF_TRANSMITTER or nil
-  Protocol.handsetId = Protocol.deviceIsELRS_TX and Protocol.CRSF.ADDRESS_ELRS_LUA or Protocol.CRSF.ADDRESS_RADIO_TRANSMITTER
+  Protocol.handsetId = Protocol.deviceIsELRS_TX and Protocol.CRSF.ADDRESS_ELRS_LUA
+    or Protocol.CRSF.ADDRESS_RADIO_TRANSMITTER
 
   Protocol.allocateFields()
   Protocol.reloadAllFields()
@@ -204,7 +208,7 @@ end
 
 function Protocol.allocateFields()
   Protocol.fields = {}
-  Protocol.fields[0] = {}  -- root folder (field 0)
+  Protocol.fields[0] = {} -- root folder (field 0)
   for i = 1, Protocol.fieldsCount do
     Protocol.fields[i] = {}
   end
@@ -408,7 +412,7 @@ function Protocol.fieldFloatLoad(field, data, offset)
     field.prec = 3
   end
   field.step = Protocol.fieldGetValue(data, offset + 17, 4)
-  field.fmt = shim.tableConcat({"%.", tostring(field.prec), "f", field.unit or ""})
+  field.fmt = shim.tableConcat({ "%.", tostring(field.prec), "f", field.unit or "" })
   field.prec = 10 ^ field.prec
 end
 
@@ -492,9 +496,11 @@ function Protocol.reloadRelatedFields(field)
   for fieldId = Protocol.fieldsCount, 1, -1 do
     local sibling = Protocol.fields[fieldId]
     local siblingType = sibling.type or 99
-    if fieldId ~= field.id
+    if
+      fieldId ~= field.id
       and sibling.parent == field.parent
-      and (siblingType < Protocol.CRSF.FOLDER or siblingType == Protocol.CRSF.INFO) then
+      and (siblingType < Protocol.CRSF.FOLDER or siblingType == Protocol.CRSF.INFO)
+    then
       sibling.dirty = true
       sibling.name = nil
       Protocol.loadQueue[#Protocol.loadQueue + 1] = fieldId
@@ -514,7 +520,10 @@ function Protocol.handleCommandSave(field)
   if field.status ~= nil then
     if field.status < Protocol.CRSF.CMD_CONFIRMED then
       field.status = Protocol.CRSF.CMD_CLICK
-      Protocol.push(Protocol.CRSF.FRAMETYPE_PARAMETER_WRITE, { Protocol.deviceId, Protocol.handsetId, field.id, field.status })
+      Protocol.push(
+        Protocol.CRSF.FRAMETYPE_PARAMETER_WRITE,
+        { Protocol.deviceId, Protocol.handsetId, field.id, field.status }
+      )
       Protocol.fieldPopup = field
       Protocol.fieldPopup.lastStatus = Protocol.CRSF.CMD_IDLE
       Protocol.fieldTimeout = getTime() + field.timeout
@@ -524,7 +533,10 @@ end
 
 function Protocol.commandConfirm()
   if Protocol.fieldPopup then
-    Protocol.push(Protocol.CRSF.FRAMETYPE_PARAMETER_WRITE, { Protocol.deviceId, Protocol.handsetId, Protocol.fieldPopup.id, Protocol.CRSF.CMD_CONFIRMED })
+    Protocol.push(
+      Protocol.CRSF.FRAMETYPE_PARAMETER_WRITE,
+      { Protocol.deviceId, Protocol.handsetId, Protocol.fieldPopup.id, Protocol.CRSF.CMD_CONFIRMED }
+    )
     Protocol.fieldTimeout = getTime() + Protocol.fieldPopup.timeout
     Protocol.fieldPopup.status = Protocol.CRSF.CMD_CONFIRMED
   end
@@ -532,7 +544,10 @@ end
 
 function Protocol.commandCancel()
   if Protocol.fieldPopup then
-    Protocol.push(Protocol.CRSF.FRAMETYPE_PARAMETER_WRITE, { Protocol.deviceId, Protocol.handsetId, Protocol.fieldPopup.id, Protocol.CRSF.CMD_CANCEL })
+    Protocol.push(
+      Protocol.CRSF.FRAMETYPE_PARAMETER_WRITE,
+      { Protocol.deviceId, Protocol.handsetId, Protocol.fieldPopup.id, Protocol.CRSF.CMD_CANCEL }
+    )
     Protocol.fieldPopup = nil
   end
 end
@@ -542,20 +557,20 @@ end
 -- ============================================================================
 
 Protocol.handlers = {
-  [Protocol.CRSF.UINT8 + 1]          = { load = Protocol.fieldIntLoad, save = Protocol.fieldIntSave },
-  [Protocol.CRSF.INT8 + 1]           = { load = Protocol.fieldIntLoad, save = Protocol.fieldIntSave },
-  [Protocol.CRSF.UINT16 + 1]         = { load = Protocol.fieldIntLoad, save = Protocol.fieldIntSave },
-  [Protocol.CRSF.INT16 + 1]          = { load = Protocol.fieldIntLoad, save = Protocol.fieldIntSave },
-  [Protocol.CRSF.UINT32 + 1]         = nil,
-  [Protocol.CRSF.INT32 + 1]          = nil,
-  [Protocol.CRSF.UINT64 + 1]         = nil,
-  [Protocol.CRSF.INT64 + 1]          = nil,
-  [Protocol.CRSF.FLOAT + 1]          = { load = Protocol.fieldFloatLoad, save = Protocol.fieldIntSave },
+  [Protocol.CRSF.UINT8 + 1] = { load = Protocol.fieldIntLoad, save = Protocol.fieldIntSave },
+  [Protocol.CRSF.INT8 + 1] = { load = Protocol.fieldIntLoad, save = Protocol.fieldIntSave },
+  [Protocol.CRSF.UINT16 + 1] = { load = Protocol.fieldIntLoad, save = Protocol.fieldIntSave },
+  [Protocol.CRSF.INT16 + 1] = { load = Protocol.fieldIntLoad, save = Protocol.fieldIntSave },
+  [Protocol.CRSF.UINT32 + 1] = nil,
+  [Protocol.CRSF.INT32 + 1] = nil,
+  [Protocol.CRSF.UINT64 + 1] = nil,
+  [Protocol.CRSF.INT64 + 1] = nil,
+  [Protocol.CRSF.FLOAT + 1] = { load = Protocol.fieldFloatLoad, save = Protocol.fieldIntSave },
   [Protocol.CRSF.TEXT_SELECTION + 1] = { load = Protocol.fieldTextSelLoad, save = Protocol.fieldIntSave },
-  [Protocol.CRSF.STRING + 1]         = { load = Protocol.fieldStringLoad, save = nil },
-  [Protocol.CRSF.FOLDER + 1]         = { load = Protocol.fieldFolderLoad, save = nil },
-  [Protocol.CRSF.INFO + 1]           = { load = Protocol.fieldStringLoad, save = nil },
-  [Protocol.CRSF.COMMAND + 1]        = { load = Protocol.fieldCommandLoad, save = Protocol.handleCommandSave },
+  [Protocol.CRSF.STRING + 1] = { load = Protocol.fieldStringLoad, save = nil },
+  [Protocol.CRSF.FOLDER + 1] = { load = Protocol.fieldFolderLoad, save = nil },
+  [Protocol.CRSF.INFO + 1] = { load = Protocol.fieldStringLoad, save = nil },
+  [Protocol.CRSF.COMMAND + 1] = { load = Protocol.fieldCommandLoad, save = Protocol.handleCommandSave },
 }
 
 -- ============================================================================
@@ -630,8 +645,7 @@ function Protocol.parseParameterInfoMessage(data)
       end
 
       -- Auto-queue children for root folder (field 0) and during background preloading.
-      if field.type == Protocol.CRSF.FOLDER and field.children
-          and (fieldId == 0 or Protocol.backgroundLoading) then
+      if field.type == Protocol.CRSF.FOLDER and field.children and (fieldId == 0 or Protocol.backgroundLoading) then
         for i = #field.children, 1, -1 do
           Protocol.loadQueue[#Protocol.loadQueue + 1] = field.children[i]
         end
@@ -719,7 +733,10 @@ function Protocol.tick()
 
   if Protocol.fieldPopup then
     if time > Protocol.fieldTimeout and Protocol.fieldPopup.status ~= Protocol.CRSF.CMD_ASKCONFIRM then
-      Protocol.push(Protocol.CRSF.FRAMETYPE_PARAMETER_WRITE, { Protocol.deviceId, Protocol.handsetId, Protocol.fieldPopup.id, Protocol.CRSF.CMD_QUERY })
+      Protocol.push(
+        Protocol.CRSF.FRAMETYPE_PARAMETER_WRITE,
+        { Protocol.deviceId, Protocol.handsetId, Protocol.fieldPopup.id, Protocol.CRSF.CMD_QUERY }
+      )
       Protocol.fieldTimeout = time + Protocol.fieldPopup.timeout
     end
   elseif time > Protocol.linkstatTimeout then
@@ -732,7 +749,10 @@ function Protocol.tick()
     Protocol.linkstatTimeout = time + 100
   elseif time > Protocol.fieldTimeout and Protocol.fieldsCount ~= 0 then
     if #Protocol.loadQueue > 0 then
-      Protocol.push(Protocol.CRSF.FRAMETYPE_PARAMETER_READ, { Protocol.deviceId, Protocol.handsetId, Protocol.loadQueue[#Protocol.loadQueue], Protocol.fieldChunk })
+      Protocol.push(
+        Protocol.CRSF.FRAMETYPE_PARAMETER_READ,
+        { Protocol.deviceId, Protocol.handsetId, Protocol.loadQueue[#Protocol.loadQueue], Protocol.fieldChunk }
+      )
       Protocol.fieldTimeout = time + Protocol.fieldResponseTimeout()
     else
       Protocol.backgroundLoading = false

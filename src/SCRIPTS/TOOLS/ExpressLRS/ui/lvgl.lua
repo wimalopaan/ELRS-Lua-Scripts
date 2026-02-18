@@ -25,7 +25,7 @@ local UI = {
   warningDismissed = false,
   warningDismissedAt = nil,
   warningDialog = nil,
-  commandDialog = nil
+  commandDialog = nil,
 }
 
 -- ============================================================================
@@ -60,7 +60,7 @@ function ModelMismatchDialog.show(onContinue, onExit)
   local dg = lvgl.dialog({
     title = "Model Mismatch",
     flexFlow = lvgl.FLOW_COLUMN,
-    flexPad = lvgl.PAD_SMALL
+    flexPad = lvgl.PAD_SMALL,
   })
 
   dg:build({
@@ -120,7 +120,7 @@ function NoModuleDialog.show(onExit)
     title = "No Module Found: Check Model Settings",
     flexFlow = lvgl.FLOW_COLUMN,
     flexPad = lvgl.PAD_SMALL,
-    close = onExit
+    close = onExit,
   })
 
   dg:build({
@@ -174,7 +174,7 @@ local function createSpinner(parent)
     flexPad = lvgl.PAD_MEDIUM,
     color = COLOR_THEME_PRIMARY2,
     w = lvgl.PERCENT_SIZE + 100,
-    align = CENTER
+    align = CENTER,
   })
   wrapper:arc({
     radius = r,
@@ -360,22 +360,41 @@ local function showVersionRequired()
     title = "EdgeTX Version Not Supported",
     flexFlow = lvgl.FLOW_COLUMN,
     flexPad = lvgl.PAD_SMALL,
-    close = function() App.shouldExit = true end
+    close = function()
+      App.shouldExit = true
+    end,
   })
 
   dg:build({
-    {type="box", x=10, flexFlow=lvgl.FLOW_COLUMN, flexPad=lvgl.PAD_SMALL, children={
-      {type="label", text="Requires EdgeTX:"},
-      {type="label", text="- 2.11.5 or later"},
-      {type="label", text="- 2.12-rc4 or later"},
-      {type="label", text="- 3.0 or later"},
-    }},
-    {type="box", flexFlow=lvgl.FLOW_ROW, w=lvgl.PERCENT_SIZE+100, align=CENTER, children={
-      {type="button", text="Exit", w=lvgl.PERCENT_SIZE+98, press=function()
-        dg:close()
-        App.shouldExit = true
-      end},
-    }},
+    {
+      type = "box",
+      x = 10,
+      flexFlow = lvgl.FLOW_COLUMN,
+      flexPad = lvgl.PAD_SMALL,
+      children = {
+        { type = "label", text = "Requires EdgeTX:" },
+        { type = "label", text = "- 2.11.5 or later" },
+        { type = "label", text = "- 2.12-rc4 or later" },
+        { type = "label", text = "- 3.0 or later" },
+      },
+    },
+    {
+      type = "box",
+      flexFlow = lvgl.FLOW_ROW,
+      w = lvgl.PERCENT_SIZE + 100,
+      align = CENTER,
+      children = {
+        {
+          type = "button",
+          text = "Exit",
+          w = lvgl.PERCENT_SIZE + 98,
+          press = function()
+            dg:close()
+            App.shouldExit = true
+          end,
+        },
+      },
+    },
   })
 end
 
@@ -497,7 +516,9 @@ function UI.handleBack()
     Dialogs.showConfirm({
       title = "Exit",
       message = "Exit ExpressLRS Lua script?",
-      onConfirm = function() App.shouldExit = true end
+      onConfirm = function()
+        App.shouldExit = true
+      end,
     })
   else
     local entry = App.goBack()
@@ -530,27 +551,24 @@ local function handleCommandPopup()
     return
   end
 
-  if Protocol.fieldPopup.status == Protocol.CRSF.CMD_IDLE and Protocol.fieldPopup.lastStatus ~= Protocol.CRSF.CMD_IDLE then
+  if
+    Protocol.fieldPopup.status == Protocol.CRSF.CMD_IDLE and Protocol.fieldPopup.lastStatus ~= Protocol.CRSF.CMD_IDLE
+  then
     Protocol.reloadAllFields()
     Protocol.fieldPopup = nil
     UI.commandDialog = nil
     UI.invalidate()
   elseif Protocol.fieldPopup.status == Protocol.CRSF.CMD_ASKCONFIRM then
     if not UI.commandDialog or Protocol.fieldPopup.lastStatus ~= Protocol.CRSF.CMD_ASKCONFIRM then
-      UI.commandDialog = CommandPage.showConfirm(
-        Protocol.fieldPopup.name,
-        Protocol.fieldPopup.info,
-        function() Protocol.commandConfirm() end,
-        onCommandCancel
-      )
+      UI.commandDialog = CommandPage.showConfirm(Protocol.fieldPopup.name, Protocol.fieldPopup.info, function()
+        Protocol.commandConfirm()
+      end, onCommandCancel)
     end
     Protocol.fieldPopup.lastStatus = Protocol.fieldPopup.status
   elseif Protocol.fieldPopup.status == Protocol.CRSF.CMD_EXECUTING then
     if not UI.commandDialog or Protocol.fieldPopup.lastStatus ~= Protocol.CRSF.CMD_EXECUTING then
-      UI.commandDialog = CommandPage.showExecuting(
-        Protocol.fieldPopup.name or Protocol.fieldPopup.info,
-        onCommandCancel
-      )
+      UI.commandDialog =
+        CommandPage.showExecuting(Protocol.fieldPopup.name or Protocol.fieldPopup.info, onCommandCancel)
     end
     Protocol.fieldPopup.lastStatus = Protocol.fieldPopup.status
   end
@@ -567,21 +585,18 @@ local function handleWarning()
   if Protocol.elrsFlags > Protocol.CRSF.ELRS_FLAGS_STATUS_MASK then
     if not UI.warningDialog and not UI.warningDismissed then
       if Protocol.elrsFlagsInfo == "Model Mismatch" then
-        UI.warningDialog = ModelMismatchDialog.show(
-          function()
-            UI.warningDismissed = true
-            UI.warningDismissedAt = getTime()
-            UI.invalidate()
-          end,
-          function()
-            UI.warningDismissed = true
-            App.shouldExit = true
-          end
-        )
+        UI.warningDialog = ModelMismatchDialog.show(function()
+          UI.warningDismissed = true
+          UI.warningDismissedAt = getTime()
+          UI.invalidate()
+        end, function()
+          UI.warningDismissed = true
+          App.shouldExit = true
+        end)
       else
         Dialogs.showMessage({
           title = "Warning",
-          message = Protocol.elrsFlagsInfo
+          message = Protocol.elrsFlagsInfo,
         })
         UI.warningDialog = true
         UI.warningDismissed = true
@@ -635,7 +650,7 @@ end
 function UI.getSubtitle()
   if not Navigation.isAtRoot() then
     local top = Navigation.stack[#Navigation.stack]
-    local subtitleParts = {top.name or ""}
+    local subtitleParts = { top.name or "" }
 
     local loaded, total = Protocol.getFolderLoadProgress(Navigation.getCurrent())
     if loaded and loaded < total then
@@ -656,9 +671,13 @@ function UI.getSubtitle()
     subtitle = string.format("%u/%u • %s", Protocol.lostPackets, Protocol.receivedPackets, state)
   end
 
-  if Protocol.elrsFlags > Protocol.CRSF.ELRS_FLAGS_STATUS_MASK and Protocol.elrsFlagsInfo and Protocol.elrsFlagsInfo ~= "" then
+  if
+    Protocol.elrsFlags > Protocol.CRSF.ELRS_FLAGS_STATUS_MASK
+    and Protocol.elrsFlagsInfo
+    and Protocol.elrsFlagsInfo ~= ""
+  then
     if subtitle ~= "" then
-      subtitle = table.concat({subtitle, " • ", Protocol.elrsFlagsInfo})
+      subtitle = table.concat({ subtitle, " • ", Protocol.elrsFlagsInfo })
     else
       subtitle = Protocol.elrsFlagsInfo
     end
@@ -726,13 +745,17 @@ function UI.createToggleRow(pg, field)
         children = {
           {
             type = lvgl.TOGGLE,
-            get = function() return field.value or 0 end,
+            get = function()
+              return field.value or 0
+            end,
             set = function(val)
               field.value = val
               Protocol.fieldIntSave(field)
               Protocol.reloadRelatedFields(field)
             end,
-            active = function() return not field.disabled end,
+            active = function()
+              return not field.disabled
+            end,
           },
           {
             type = lvgl.BOX,
@@ -777,13 +800,17 @@ function UI.createChoiceRow(pg, field)
           {
             type = lvgl.CHOICE,
             values = filteredValues,
-            get = function() return origToFiltered[field.value or 0] or 1 end,
+            get = function()
+              return origToFiltered[field.value or 0] or 1
+            end,
             set = function(val)
               field.value = filteredToOrig[val] or 0
               Protocol.fieldIntSave(field)
               Protocol.reloadRelatedFields(field)
             end,
-            active = function() return not field.disabled end,
+            active = function()
+              return not field.disabled
+            end,
           },
           {
             type = lvgl.BOX,
@@ -814,7 +841,9 @@ function UI.createNumberRow(pg, field)
           x = LABEL_PCT,
           min = field.min or 0,
           max = field.max or 255,
-          get = function() return field.value or 0 end,
+          get = function()
+            return field.value or 0
+          end,
           set = function(val)
             field.value = val
           end,
@@ -827,9 +856,11 @@ function UI.createNumberRow(pg, field)
             if field.type == Protocol.CRSF.FLOAT then
               return string.format(field.fmt or "%.0f", val / (field.prec or 1))
             end
-            return table.concat({tostring(val), field.unit or ""})
+            return table.concat({ tostring(val), field.unit or "" })
           end,
-          active = function() return not field.disabled end,
+          active = function()
+            return not field.disabled
+          end,
         },
       },
     },
@@ -860,7 +891,7 @@ function UI.createFolderWidget(pg, field, width)
     h = lvgl.UI_ELEMENT_HEIGHT * 2,
     press = function()
       UI.openFolder(field.id, field.name)
-    end
+    end,
   })
 end
 
@@ -870,7 +901,7 @@ function UI.createCommandWidget(pg, field)
     w = lvgl.PERCENT_SIZE + 100,
     press = function()
       Protocol.handleCommandSave(field)
-    end
+    end,
   })
 end
 
@@ -915,7 +946,7 @@ function UI.build()
 
   local pageOptions = {
     title = "ExpressLRS",
-    subtitle = UI.getSubtitle
+    subtitle = UI.getSubtitle,
   }
 
   if not Navigation.isAtRoot() then
@@ -945,7 +976,7 @@ function UI.build()
           w = lvgl.PERCENT_SIZE + 100,
           press = function()
             UI.switchDevice(device.id)
-          end
+          end,
         })
       end
     end
@@ -985,7 +1016,7 @@ function UI.build()
               flexFlow = lvgl.FLOW_ROW,
               flexPad = lvgl.PAD_SMALL,
               align = CENTER,
-              color = COLOR_THEME_PRIMARY2
+              color = COLOR_THEME_PRIMARY2,
             })
 
             for k = 0, FOLDERS_PER_ROW - 1 do
@@ -1013,7 +1044,7 @@ function UI.build()
         h = lvgl.UI_ELEMENT_HEIGHT * 2,
         press = function()
           UI.openFolder(Navigation.FOLDER_OTHER_DEVICES, "Other Devices")
-        end
+        end,
       })
     end
   end
@@ -1021,7 +1052,7 @@ function UI.build()
   fieldContainer:rectangle({
     w = lvgl.PERCENT_SIZE + 100,
     h = lvgl.PAD_SMALL,
-    thickness = 0
+    thickness = 0,
   })
 
   UI.uiBuilt = true

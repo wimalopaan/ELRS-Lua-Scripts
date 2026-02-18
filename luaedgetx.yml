@@ -1,0 +1,528 @@
+---
+name: luaedgetx
+
+globals:
+
+  # ---------------------------------------------------------------------------
+  # Core Lua 5.3 globals available in EdgeTX (built with LUA_COMPAT_5_2)
+  # ---------------------------------------------------------------------------
+
+  _G:
+    property: new-fields
+  _VERSION:
+    property: read-only
+
+  assert:
+    args:
+      - type: any
+      - required: false
+        type: string
+  collectgarbage:
+    args:
+      - required: false
+        type:
+          - collect
+          - count
+          - restart
+          - setpause
+          - setstepmul
+          - step
+          - stop
+  dofile:
+    args:
+      - type: string
+  error:
+    args:
+      - type: string
+      - required: false
+        type: number
+  getmetatable:
+    args:
+      - type: table
+    must_use: true
+  ipairs:
+    args:
+      - type: table
+    must_use: true
+  load:
+    args:
+      - type: function
+      - required: false
+        type: string
+  loadfile:
+    args:
+      - type: string
+      - required: false
+        type: string
+      - required: false
+        type: any
+  next:
+    args:
+      - type: table
+      - required: false
+        type: number
+  pairs:
+    args:
+      - type: table
+    must_use: true
+  pcall:
+    args:
+      - type: function
+      - required: false
+        type: "..."
+  print:
+    args:
+      - required: false
+        type: "..."
+  rawequal:
+    args:
+      - type: any
+      - type: any
+    must_use: true
+  rawget:
+    args:
+      - type: any
+      - type: any
+    must_use: true
+  rawlen:
+    args:
+      - type: any
+    must_use: true
+  rawset:
+    args:
+      - type: any
+      - type: any
+      - type: any
+  select:
+    args:
+      - type: any
+      - type: "..."
+    must_use: true
+  setmetatable:
+    args:
+      - type: table
+      - required: false
+        type: table
+  tonumber:
+    args:
+      - type: any
+      - required: false
+        type: number
+    must_use: true
+  tostring:
+    args:
+      - type: any
+    must_use: true
+  type:
+    args:
+      - type: any
+  require:
+    args:
+      - type: string
+  xpcall:
+    args:
+      - type: function
+      - required: false
+        type: "..."
+
+  # ---------------------------------------------------------------------------
+  # bit32 library (Lua 5.2)
+  # ---------------------------------------------------------------------------
+
+  bit32.arshift:
+    args:
+      - type: number
+      - type: number
+    must_use: true
+  bit32.band:
+    args:
+      - type: "..."
+    must_use: true
+  bit32.bnot:
+    args:
+      - type: number
+    must_use: true
+  bit32.bor:
+    args:
+      - type: "..."
+    must_use: true
+  bit32.btest:
+    args:
+      - type: "..."
+    must_use: true
+  bit32.bxor:
+    args:
+      - type: "..."
+    must_use: true
+  bit32.extract:
+    args:
+      - type: number
+      - type: number
+      - required: false
+        type: number
+    must_use: true
+  bit32.lrotate:
+    args:
+      - type: number
+      - type: number
+    must_use: true
+  bit32.lshift:
+    args:
+      - type: number
+      - type: number
+    must_use: true
+  bit32.replace:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - required: false
+        type: number
+    must_use: true
+  bit32.rrotate:
+    args:
+      - type: number
+      - type: number
+    must_use: true
+  bit32.rshift:
+    args:
+      - type: number
+      - type: number
+    must_use: true
+
+  # ---------------------------------------------------------------------------
+  # io library (partial — EdgeTX only provides these 5 functions)
+  # Signatures differ from standard Lua: file handle is always the first arg.
+  # ---------------------------------------------------------------------------
+
+  io.open:
+    args:
+      - type: string
+      - required: false
+        type:
+          - r
+          - rb
+          - w
+          - wb
+          - a
+          - ab
+  io.read:
+    args:
+      - type: any
+      - type: number
+  io.write:
+    args:
+      - type: any
+      - type: "..."
+  io.close:
+    args:
+      - type: any
+  io.seek:
+    args:
+      - type: any
+      - type: number
+
+  # ---------------------------------------------------------------------------
+  # math library (Lua 5.3, with LUA_COMPAT_MATHLIB for deprecated 5.2 funcs)
+  # ---------------------------------------------------------------------------
+
+  math.abs:
+    args:
+      - type: number
+    must_use: true
+  math.acos:
+    args:
+      - type: number
+    must_use: true
+  math.asin:
+    args:
+      - type: number
+    must_use: true
+  math.atan:
+    args:
+      - type: number
+    must_use: true
+  math.atan2:
+    args:
+      - type: number
+      - type: number
+    must_use: true
+  math.ceil:
+    args:
+      - type: number
+    must_use: true
+  math.cos:
+    args:
+      - type: number
+    must_use: true
+  math.cosh:
+    args:
+      - type: number
+    must_use: true
+  math.deg:
+    args:
+      - type: number
+    must_use: true
+  math.exp:
+    args:
+      - type: number
+    must_use: true
+  math.floor:
+    args:
+      - type: number
+    must_use: true
+  math.fmod:
+    args:
+      - type: number
+      - type: number
+    must_use: true
+  math.frexp:
+    args:
+      - type: number
+    must_use: true
+  math.huge:
+    property: read-only
+  math.maxinteger:
+    property: read-only
+  math.mininteger:
+    property: read-only
+  math.ldexp:
+    args:
+      - type: number
+      - type: number
+    must_use: true
+  math.log:
+    args:
+      - type: number
+      - required: false
+        type: number
+    must_use: true
+  math.log10:
+    args:
+      - type: number
+    must_use: true
+  math.max:
+    args:
+      - type: number
+      - required: use of max only makes sense with more than 1 parameter
+        type: "..."
+    must_use: true
+  math.min:
+    args:
+      - type: number
+      - required: use of min only makes sense with more than 1 parameter
+        type: "..."
+    must_use: true
+  math.modf:
+    args:
+      - type: number
+    must_use: true
+  math.pi:
+    property: read-only
+  math.pow:
+    args:
+      - type: number
+      - type: number
+    must_use: true
+  math.rad:
+    args:
+      - type: number
+    must_use: true
+  math.random:
+    args:
+      - required: false
+        type: number
+      - required: false
+        type: number
+    must_use: true 
+  math.randomseed:
+    args:
+      - type: number
+  math.sin:
+    args:
+      - type: number
+    must_use: true
+  math.sinh:
+    args:
+      - type: number
+    must_use: true
+  math.sqrt:
+    args:
+      - type: number
+    must_use: true
+  math.tan:
+    args:
+      - type: number
+    must_use: true
+  math.tointeger:
+    args:
+      - type: any
+    must_use: true
+  math.type:
+    args:
+      - type: any
+    must_use: true
+  math.ult:
+    args:
+      - type: number
+      - type: number
+    must_use: true
+  math.tanh:
+    args:
+      - type: number
+    must_use: true
+
+  # ---------------------------------------------------------------------------
+  # string library
+  # ---------------------------------------------------------------------------
+
+  string.byte:
+    args:
+      - type: string
+      - required: false
+        type: number
+      - required: false
+        type: number
+  string.char:
+    args:
+      - required: false
+        type: number
+      - required: false
+        type: "..."
+    must_use: true
+  string.dump:
+    args:
+      - type: function
+    must_use: true
+  string.find:
+    args:
+      - type: string
+      - type: string
+      - required: false
+        type: number
+      - required: false
+        type: bool
+    must_use: true
+  string.format:
+    args:
+      - type: string
+      - required: false
+        type: "..."
+    must_use: true
+  string.gmatch:
+    args:
+      - type: string
+      - type: string
+    must_use: true
+  string.gsub:
+    args:
+      - type: string
+      - type: string
+      - type: any
+      - required: false
+        type: number
+    must_use: true
+  string.len:
+    args:
+      - type: string
+    must_use: true
+  string.lower:
+    args:
+      - type: string
+    must_use: true
+  string.match:
+    args:
+      - type: string
+      - type: string
+      - required: false
+        type: number
+    must_use: true
+  string.rep:
+    args:
+      - type: string
+      - type: number
+    must_use: true
+  string.reverse:
+    args:
+      - type: string
+    must_use: true
+  string.sub:
+    args:
+      - type: string
+      - type: number
+      - required: false
+        type: number
+    must_use: true
+  string.pack:
+    args:
+      - type: string
+      - required: false
+        type: "..."
+    must_use: true
+  string.packsize:
+    args:
+      - type: string
+    must_use: true
+  string.unpack:
+    args:
+      - type: string
+      - type: string
+      - required: false
+        type: number
+    must_use: true
+  string.upper:
+    args:
+      - type: string
+    must_use: true
+
+  # ---------------------------------------------------------------------------
+  # table library (color LCD radios only — all our targets are color LCD)
+  # ---------------------------------------------------------------------------
+
+  table.concat:
+    args:
+      - type: table
+      - required: false
+        type: string
+      - required: false
+        type: number
+      - required: false
+        type: number
+    must_use: true
+  table.insert:
+    args:
+      - type: table
+        observes: write
+      - type: any
+      - required: false
+        type: any
+  table.move:
+    args:
+      - type: table
+      - type: number
+      - type: number
+      - type: number
+      - required: false
+        type: table
+  table.pack:
+    args:
+      - type: "..."
+    must_use: true
+  table.remove:
+    args:
+      - type: table
+      - required: false
+        type: number
+  table.sort:
+    args:
+      - type: table
+      - required: false
+        type: function
+  table.unpack:
+    args:
+      - type: table
+      - required: false
+        type: number
+      - required: false
+        type: number
+    must_use: true

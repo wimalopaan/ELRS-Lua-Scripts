@@ -22,42 +22,42 @@ local CRSF = {}
 
 CRSF.CONST = {
   -- Addresses
-  ADDRESS_TX_MODULE        = 0xEE,
-  ADDRESS_HANDSET          = 0xEF,
-  ADDRESS_BROADCAST        = 0x00,
+  ADDRESS_TX_MODULE = 0xEE,
+  ADDRESS_HANDSET = 0xEF,
+  ADDRESS_BROADCAST = 0x00,
   ADDRESS_RADIO_TRANSMITTER = 0xEA,
 
   -- Frame types
-  FRAMETYPE_DEVICE_PING              = 0x28,
-  FRAMETYPE_DEVICE_INFO              = 0x29,
+  FRAMETYPE_DEVICE_PING = 0x28,
+  FRAMETYPE_DEVICE_INFO = 0x29,
   FRAMETYPE_PARAMETER_SETTINGS_ENTRY = 0x2B,
-  FRAMETYPE_PARAMETER_READ           = 0x2C,
-  FRAMETYPE_PARAMETER_WRITE          = 0x2D,
-  FRAMETYPE_ELRS_STATUS              = 0x2E,
+  FRAMETYPE_PARAMETER_READ = 0x2C,
+  FRAMETYPE_PARAMETER_WRITE = 0x2D,
+  FRAMETYPE_ELRS_STATUS = 0x2E,
 
   -- Field types (for parsing PARAMETER_SETTINGS_ENTRY responses)
-  FIELD_UINT8              = 0,
-  FIELD_INT8               = 1,
-  FIELD_UINT16             = 2,
-  FIELD_INT16              = 3,
-  FIELD_FLOAT              = 8,
-  FIELD_TEXT_SELECTION      = 9,
-  FIELD_STRING             = 10,
-  FIELD_FOLDER             = 11,
-  FIELD_INFO               = 12,
-  FIELD_COMMAND            = 13,
+  FIELD_UINT8 = 0,
+  FIELD_INT8 = 1,
+  FIELD_UINT16 = 2,
+  FIELD_INT16 = 3,
+  FIELD_FLOAT = 8,
+  FIELD_TEXT_SELECTION = 9,
+  FIELD_STRING = 10,
+  FIELD_FOLDER = 11,
+  FIELD_INFO = 12,
+  FIELD_COMMAND = 13,
 
   -- Command states
-  CMD_IDLE                 = 0,
-  CMD_CLICK                = 1,
-  CMD_EXECUTING            = 2,
-  CMD_CONFIRMED            = 3,
+  CMD_IDLE = 0,
+  CMD_CLICK = 1,
+  CMD_EXECUTING = 2,
+  CMD_CONFIRMED = 3,
 
   -- Folder child list terminator
-  FIELD_LIST_END           = 0xFF,
+  FIELD_LIST_END = 0xFF,
 
   -- Module type for model.getModule() check
-  MODULE_TYPE_CROSSFIRE    = 5,
+  MODULE_TYPE_CROSSFIRE = 5,
 }
 
 -- ============================================================================
@@ -241,8 +241,7 @@ function CRSF:requestDeviceInfo()
     return
   end
   self._lastDevPoll = now
-  CRSF.push(CRSF.CONST.FRAMETYPE_DEVICE_PING,
-    { CRSF.CONST.ADDRESS_BROADCAST, CRSF.CONST.ADDRESS_RADIO_TRANSMITTER })
+  CRSF.push(CRSF.CONST.FRAMETYPE_DEVICE_PING, { CRSF.CONST.ADDRESS_BROADCAST, CRSF.CONST.ADDRESS_RADIO_TRANSMITTER })
 end
 
 --- Request ELRS status from the TX module (PARAMETER_WRITE with fieldId=0).
@@ -254,8 +253,7 @@ function CRSF:requestElrsStatus()
     return
   end
   self._lastStatusPoll = now
-  CRSF.push(CRSF.CONST.FRAMETYPE_PARAMETER_WRITE,
-    { CRSF.CONST.ADDRESS_TX_MODULE, CRSF.CONST.ADDRESS_HANDSET, 0, 0 })
+  CRSF.push(CRSF.CONST.FRAMETYPE_PARAMETER_WRITE, { CRSF.CONST.ADDRESS_TX_MODULE, CRSF.CONST.ADDRESS_HANDSET, 0, 0 })
 end
 
 -- ============================================================================
@@ -283,33 +281,116 @@ local function onDeviceInfo(data)
   if info.vMaj == 4 then
     -- selene: allow(mixed_table)
     info.RFMOD = {
-      "25Hz", "50Hz", "100Hz", "100HzFull", "150Hz", "200Hz", "200HzFull",
-      "250Hz", "333HzFull", "500Hz", "D50", "K1000Full",
-      [21]="25Hz", [22]="50Hz", [23]="100Hz", [24]="100HzFull",
-      [25]="150Hz", [26]="200Hz", [27]="200HzFull", [28]="250Hz",
-      [29]="333HzFull", [30]="500Hz",
-      [31]="D250", [32]="D500", [33]="F500", [34]="F1000",
-      [35]="DK250", [36]="DK500", [37]="K1000",
-      [101]="X100Full", [102]="X150",
+      "25Hz",
+      "50Hz",
+      "100Hz",
+      "100HzFull",
+      "150Hz",
+      "200Hz",
+      "200HzFull",
+      "250Hz",
+      "333HzFull",
+      "500Hz",
+      "D50",
+      "K1000Full",
+      [21] = "25Hz",
+      [22] = "50Hz",
+      [23] = "100Hz",
+      [24] = "100HzFull",
+      [25] = "150Hz",
+      [26] = "200Hz",
+      [27] = "200HzFull",
+      [28] = "250Hz",
+      [29] = "333HzFull",
+      [30] = "500Hz",
+      [31] = "D250",
+      [32] = "D500",
+      [33] = "F500",
+      [34] = "F1000",
+      [35] = "DK250",
+      [36] = "DK500",
+      [37] = "K1000",
+      [101] = "X100Full",
+      [102] = "X150",
     }
     -- selene: allow(mixed_table)
     info.RFRSSI = {
-      -123, -120, -117, -112, 0, -112, -111, -111, 0, 0, -112, -101,
-      [21]=0, [22]=-115, [23]=0, [24]=-112, [25]=-112, [26]=0, [27]=0,
-      [28]=-108, [29]=-105, [30]=-105,
-      [31]=-104, [32]=-104, [33]=-104, [34]=-104,
-      [35]=-103, [36]=-103, [37]=-103,
-      [101]=-112, [102]=-112,
+      -123,
+      -120,
+      -117,
+      -112,
+      0,
+      -112,
+      -111,
+      -111,
+      0,
+      0,
+      -112,
+      -101,
+      [21] = 0,
+      [22] = -115,
+      [23] = 0,
+      [24] = -112,
+      [25] = -112,
+      [26] = 0,
+      [27] = 0,
+      [28] = -108,
+      [29] = -105,
+      [30] = -105,
+      [31] = -104,
+      [32] = -104,
+      [33] = -104,
+      [34] = -104,
+      [35] = -103,
+      [36] = -103,
+      [37] = -103,
+      [101] = -112,
+      [102] = -112,
     }
   elseif info.vMaj == 3 then
     info.RFMOD = {
-      "", "25Hz", "50Hz", "100Hz", "100HzFull", "150Hz", "200Hz", "250Hz",
-      "333HzFull", "500Hz", "D250", "D500", "F500", "F1000",
-      "D50", "200HzFull", "DK500", "K1000", "9K1000", "K1000Full",
+      "",
+      "25Hz",
+      "50Hz",
+      "100Hz",
+      "100HzFull",
+      "150Hz",
+      "200Hz",
+      "250Hz",
+      "333HzFull",
+      "500Hz",
+      "D250",
+      "D500",
+      "F500",
+      "F1000",
+      "D50",
+      "200HzFull",
+      "DK500",
+      "K1000",
+      "9K1000",
+      "K1000Full",
     }
     info.RFRSSI = {
-      0, -123, -115, -117, -112, -112, -112, -108, -105, -105,
-      -104, -104, -104, -104, -112, -111, -103, -103, 0, -101,
+      0,
+      -123,
+      -115,
+      -117,
+      -112,
+      -112,
+      -112,
+      -108,
+      -105,
+      -105,
+      -104,
+      -104,
+      -104,
+      -104,
+      -112,
+      -111,
+      -103,
+      -103,
+      0,
+      -101,
     }
   else
     info.RFMOD = { "", "25Hz", "50Hz", "100Hz", "150Hz", "200Hz", "250Hz", "500Hz" }

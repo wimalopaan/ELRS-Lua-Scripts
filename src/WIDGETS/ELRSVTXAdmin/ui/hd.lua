@@ -17,28 +17,28 @@ local WidgetUI = {}
 --   1/6: 69→~58   1/4: 104→~87   1/3: 139→116   1/2: 209→175   3/4: 313→~262
 -- Thresholds must work for both decorated and undecorated layouts.
 WidgetUI.breakpoints = {
-  topBarW  = 200,
-  sixthH   = 78,   -- between 1/6 (~58-69) and 1/4 (~87-104)
-  quarterH = 110,  -- between 1/4 (~87-104) and 1/3 (116-139)
-  thirdH   = 155,  -- between 1/3 (116-139) and 1/2 (175-209)
-  halfH    = 235,  -- between 1/2 (175-209) and 3/4 (~262-313)
+  topBarW = 200,
+  sixthH = 78, -- between 1/6 (~58-69) and 1/4 (~87-104)
+  quarterH = 110, -- between 1/4 (~87-104) and 1/3 (116-139)
+  thirdH = 155, -- between 1/3 (116-139) and 1/2 (175-209)
+  halfH = 235, -- between 1/2 (175-209) and 3/4 (~262-313)
 }
 
 WidgetUI.fonts = {
-  sixth   = { status = BOLD },
+  sixth = { status = BOLD },
   quarter = { status = BOLD },
-  third   = { status = MIDSIZE },
-  half    = { hero = MIDSIZE, detail = SMLSIZE },
-  full    = { hero = MIDSIZE, detail = 0 },
+  third = { status = MIDSIZE },
+  half = { hero = MIDSIZE, detail = SMLSIZE },
+  full = { hero = MIDSIZE, detail = 0 },
 }
-
 
 -- ============================================================================
 -- Minimized layout builders (by widget height tier)
 -- ============================================================================
 
 local TopBarUI = loadScript("/WIDGETS/ELRSVTXAdmin/ui/topbar.lua")({
-  Protocol = Protocol, VTX = VTX,
+  Protocol = Protocol,
+  VTX = VTX,
 })
 
 --- 1/6: single row. Wide: band + detail + cheatsheet. Narrow: band + detail.
@@ -271,12 +271,18 @@ function WidgetUI.build(wgtZone, opts)
   local w, h = wgtZone.w, wgtZone.h
   local opa = bgOpacity(opts)
   local bp = WidgetUI.breakpoints
-  if     w < bp.topBarW  then TopBarUI.build(w, h)
-  elseif h < bp.sixthH   then WidgetUI.buildSixth(w, h, opa)
-  elseif h < bp.quarterH then WidgetUI.buildQuarter(w, h, opa)
-  elseif h < bp.thirdH   then WidgetUI.buildThird(w, h, opa)
-  elseif h < bp.halfH    then WidgetUI.buildHalf(w, h, opa)
-  else                         WidgetUI.buildFull(w, h, opa)
+  if w < bp.topBarW then
+    TopBarUI.build(w, h)
+  elseif h < bp.sixthH then
+    WidgetUI.buildSixth(w, h, opa)
+  elseif h < bp.quarterH then
+    WidgetUI.buildQuarter(w, h, opa)
+  elseif h < bp.thirdH then
+    WidgetUI.buildThird(w, h, opa)
+  elseif h < bp.halfH then
+    WidgetUI.buildHalf(w, h, opa)
+  else
+    WidgetUI.buildFull(w, h, opa)
   end
 end
 

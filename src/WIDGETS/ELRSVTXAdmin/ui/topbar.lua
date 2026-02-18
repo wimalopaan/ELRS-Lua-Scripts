@@ -16,7 +16,7 @@ local function getStatusLine()
   if VTX.state.band == 0 then
     return "--"
   end
-  return table.concat({VTX.state.bandLetter, VTX.state.channel})
+  return table.concat({ VTX.state.bandLetter, VTX.state.channel })
 end
 
 --- Top bar: ultra-compact single line, no background.
@@ -42,8 +42,8 @@ function TopBarUI.build(w, h)
             if s == "--" then
               return s
             end
-            local pwr = VTX.state.power > 0 and table.concat({"P", VTX.state.power}) or "P-"
-            return table.concat({s, pwr}, " ")
+            local pwr = VTX.state.power > 0 and table.concat({ "P", VTX.state.power }) or "P-"
+            return table.concat({ s, pwr }, " ")
           end,
         },
       },

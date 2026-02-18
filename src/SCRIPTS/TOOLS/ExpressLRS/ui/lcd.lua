@@ -352,18 +352,18 @@ local function fieldCommandDisplay(field, y, attr)
 end
 
 local displayHandlers = {}
-displayHandlers[Protocol.CRSF.UINT8]          = fieldIntDisplay
-displayHandlers[Protocol.CRSF.INT8]           = fieldIntDisplay
-displayHandlers[Protocol.CRSF.UINT16]         = fieldIntDisplay
-displayHandlers[Protocol.CRSF.INT16]          = fieldIntDisplay
-displayHandlers[Protocol.CRSF.FLOAT]          = fieldFloatDisplay
-displayHandlers[Protocol.CRSF.TEXT_SELECTION]  = fieldTextSelDisplay
-displayHandlers[Protocol.CRSF.STRING]         = fieldStringDisplay
-displayHandlers[Protocol.CRSF.INFO]           = fieldStringDisplay
-displayHandlers[Protocol.CRSF.FOLDER]         = fieldFolderDisplay
-displayHandlers[Protocol.CRSF.COMMAND]        = fieldCommandDisplay
-displayHandlers[Protocol.CRSF.DEVICE]         = fieldCommandDisplay
-displayHandlers[Protocol.CRSF.DEVICE_FOLDER]  = fieldFolderDisplay
+displayHandlers[Protocol.CRSF.UINT8] = fieldIntDisplay
+displayHandlers[Protocol.CRSF.INT8] = fieldIntDisplay
+displayHandlers[Protocol.CRSF.UINT16] = fieldIntDisplay
+displayHandlers[Protocol.CRSF.INT16] = fieldIntDisplay
+displayHandlers[Protocol.CRSF.FLOAT] = fieldFloatDisplay
+displayHandlers[Protocol.CRSF.TEXT_SELECTION] = fieldTextSelDisplay
+displayHandlers[Protocol.CRSF.STRING] = fieldStringDisplay
+displayHandlers[Protocol.CRSF.INFO] = fieldStringDisplay
+displayHandlers[Protocol.CRSF.FOLDER] = fieldFolderDisplay
+displayHandlers[Protocol.CRSF.COMMAND] = fieldCommandDisplay
+displayHandlers[Protocol.CRSF.DEVICE] = fieldCommandDisplay
+displayHandlers[Protocol.CRSF.DEVICE_FOLDER] = fieldFolderDisplay
 
 -- ============================================================================
 -- Title bar drawing
@@ -428,8 +428,7 @@ function UI.handleEvent(event)
   elseif event == EVT_VIRTUAL_ENTER then
     if Protocol.elrsFlags > Protocol.CRSF.ELRS_FLAGS_WARNING_THRESHOLD then
       Protocol.elrsFlags = 0
-      Protocol.push(Protocol.CRSF.FRAMETYPE_PARAMETER_WRITE,
-        { Protocol.deviceId, Protocol.handsetId, 0x2E, 0x00 })
+      Protocol.push(Protocol.CRSF.FRAMETYPE_PARAMETER_WRITE, { Protocol.deviceId, Protocol.handsetId, 0x2E, 0x00 })
     elseif UI.isOnBackExit() then
       if Navigation.isAtRoot() then
         App.shouldExit = true
@@ -521,12 +520,16 @@ end
 
 function UI.drawPopup(event)
   if event == EVT_VIRTUAL_EXIT then
-    Protocol.push(Protocol.CRSF.FRAMETYPE_PARAMETER_WRITE,
-      { Protocol.deviceId, Protocol.handsetId, Protocol.fieldPopup.id, Protocol.CRSF.CMD_CANCEL })
+    Protocol.push(
+      Protocol.CRSF.FRAMETYPE_PARAMETER_WRITE,
+      { Protocol.deviceId, Protocol.handsetId, Protocol.fieldPopup.id, Protocol.CRSF.CMD_CANCEL }
+    )
     Protocol.fieldTimeout = getTime() + 200
   end
 
-  if Protocol.fieldPopup.status == Protocol.CRSF.CMD_IDLE and Protocol.fieldPopup.lastStatus ~= Protocol.CRSF.CMD_IDLE then
+  if
+    Protocol.fieldPopup.status == Protocol.CRSF.CMD_IDLE and Protocol.fieldPopup.lastStatus ~= Protocol.CRSF.CMD_IDLE
+  then
     popupConfirmation(Protocol.fieldPopup.info or "", "Stopped!", event)
     Protocol.reloadAllFields()
     Protocol.fieldPopup = nil
@@ -543,9 +546,13 @@ function UI.drawPopup(event)
       UI.commandRunningIndicator = (UI.commandRunningIndicator % 4) + 1
     end
     local result = popupConfirmation(
-      (Protocol.fieldPopup.info or "") .. " [" .. string.sub("|/-\\", UI.commandRunningIndicator, UI.commandRunningIndicator) .. "]",
+      (Protocol.fieldPopup.info or "")
+        .. " ["
+        .. string.sub("|/-\\", UI.commandRunningIndicator, UI.commandRunningIndicator)
+        .. "]",
       "Press [RTN] to exit",
-      event)
+      event
+    )
     Protocol.fieldPopup.lastStatus = Protocol.fieldPopup.status
     if result == "CANCEL" then
       Protocol.commandCancel()

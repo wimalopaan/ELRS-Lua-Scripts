@@ -23,33 +23,33 @@ local Presets
 VTX = {
   -- Band name lookup tables
   -- selene: allow(mixed_table)
-  BAND_NAMES  = { [0] = "Off", "A", "B", "E", "F", "R", "L" },
+  BAND_NAMES = { [0] = "Off", "A", "B", "E", "F", "R", "L" },
   BAND_VALUES = { Off = 0, A = 1, B = 2, E = 3, F = 4, R = 5, L = 6 },
 
   -- Field IDs (discovered at runtime)
   ids = {
-    folder  = nil,
-    band    = nil,
+    folder = nil,
+    band = nil,
     channel = nil,
-    power   = nil,
+    power = nil,
     pitmode = nil,
-    send    = nil,
+    send = nil,
   },
 
   -- Current VTX state (parsed from folder name)
   state = {
-    band       = 0,        -- 0=Off, 1=A, 2=B, 3=E, 4=F, 5=R, 6=L
+    band = 0, -- 0=Off, 1=A, 2=B, 3=E, 4=F, 5=R, 6=L
     bandLetter = "?",
-    channel    = 0,
-    power      = 0,
-    pitmode    = false,
+    channel = 0,
+    power = 0,
+    pitmode = false,
   },
 
   -- Desired VTX state (edited by user in full-screen UI)
   desired = {
-    band    = 5,     -- Raceband
+    band = 5, -- Raceband
     channel = 1,
-    power   = 0,
+    power = 0,
     pitmode = 0,
   },
 }
@@ -77,10 +77,10 @@ function VTX.parseFolderName(name)
   end
 
   s.bandLetter = parts[1]
-  s.band       = VTX.BAND_VALUES[parts[1]] or 0
-  s.channel    = tonumber(parts[2]) or 0
-  s.power      = tonumber(parts[3]) or 0
-  s.pitmode    = (parts[#parts] == "P")
+  s.band = VTX.BAND_VALUES[parts[1]] or 0
+  s.channel = tonumber(parts[2]) or 0
+  s.power = tonumber(parts[3]) or 0
+  s.pitmode = (parts[#parts] == "P")
   return true
 end
 
@@ -88,9 +88,9 @@ end
 function VTX.syncDesiredFromState()
   local s = VTX.state
   local d = VTX.desired
-  d.band    = s.band
+  d.band = s.band
   d.channel = s.channel
-  d.power   = s.power
+  d.power = s.power
   d.pitmode = s.pitmode and 1 or 0
 end
 
@@ -100,33 +100,33 @@ end
 
 Protocol = {
   -- State machine constants
-  STATE_INIT              = 0,
-  STATE_NO_MODULE         = 1,
-  STATE_DISCOVER_ROOT     = 2,
+  STATE_INIT = 0,
+  STATE_NO_MODULE = 1,
+  STATE_DISCOVER_ROOT = 2,
   STATE_DISCOVER_CHILDREN = 3,
-  STATE_DISCOVER_VTX      = 4,
-  STATE_READY             = 5,
-  STATE_SENDING           = 6,
+  STATE_DISCOVER_VTX = 4,
+  STATE_READY = 5,
+  STATE_SENDING = 6,
 
   -- Current state
-  state      = 0,   -- STATE_INIT
+  state = 0, -- STATE_INIT
   statusText = "Initializing...",
 
   -- Discovery
-  loadQueue        = {},
-  rootChildren     = {},
-  vtxChildren      = {},
-  fieldTimeout     = 0,
+  loadQueue = {},
+  rootChildren = {},
+  vtxChildren = {},
+  fieldTimeout = 0,
   discoveredFields = {},
 
   -- Write queue
-  writeQueue    = {},
-  writeIdx      = 0,
+  writeQueue = {},
+  writeIdx = 0,
   lastWriteTime = 0,
 
   -- Folder re-read timer
-  lastFolderPoll       = 0,
-  FOLDER_POLL_INTERVAL = 200,  -- 2 seconds
+  lastFolderPoll = 0,
+  FOLDER_POLL_INTERVAL = 200, -- 2 seconds
 }
 
 -- State query helpers
@@ -158,7 +158,7 @@ function Protocol.parseChildIds(data)
   while data[off] ~= nil and data[off] ~= 0 do
     off = off + 1
   end
-  off = off + 1  -- skip null terminator
+  off = off + 1 -- skip null terminator
   while data[off] ~= nil and data[off] ~= crsf.CONST.FIELD_LIST_END do
     ids[#ids + 1] = data[off]
     off = off + 1
@@ -190,13 +190,17 @@ end
 -- ============================================================================
 
 function Protocol.sendParameterRead(fieldId)
-  crsf.push(crsf.CONST.FRAMETYPE_PARAMETER_READ,
-    { crsf.CONST.ADDRESS_TX_MODULE, crsf.CONST.ADDRESS_HANDSET, fieldId, 0 })
+  crsf.push(
+    crsf.CONST.FRAMETYPE_PARAMETER_READ,
+    { crsf.CONST.ADDRESS_TX_MODULE, crsf.CONST.ADDRESS_HANDSET, fieldId, 0 }
+  )
 end
 
 function Protocol.sendParameterWrite(fieldId, value)
-  crsf.push(crsf.CONST.FRAMETYPE_PARAMETER_WRITE,
-    { crsf.CONST.ADDRESS_TX_MODULE, crsf.CONST.ADDRESS_HANDSET, fieldId, value })
+  crsf.push(
+    crsf.CONST.FRAMETYPE_PARAMETER_WRITE,
+    { crsf.CONST.ADDRESS_TX_MODULE, crsf.CONST.ADDRESS_HANDSET, fieldId, value }
+  )
 end
 
 --- Request ELRS_STATUS (connection state) by writing field 0.
@@ -213,7 +217,7 @@ function Protocol.onSettingsEntry(data)
     return
   end
 
-  local fieldId   = data[3]
+  local fieldId = data[3]
   local fieldType = Protocol.parseFieldType(data)
   local fieldName = Protocol.parseFieldName(data)
 
@@ -236,7 +240,6 @@ function Protocol.onSettingsEntry(data)
       Protocol.state = Protocol.STATE_DISCOVER_CHILDREN
       Protocol.statusText = "Discovering fields..."
     end
-
   elseif st == Protocol.STATE_DISCOVER_CHILDREN then
     if fieldType == crsf.CONST.FIELD_FOLDER and string.sub(fieldName, 1, 9) == "VTX Admin" then
       VTX.ids.folder = fieldId
@@ -251,13 +254,17 @@ function Protocol.onSettingsEntry(data)
     if #Protocol.loadQueue == 0 and VTX.ids.folder == nil then
       Protocol.statusText = "VTX Admin not found"
     end
-
   elseif st == Protocol.STATE_DISCOVER_VTX then
-    if     fieldName == "Band"     then VTX.ids.band    = fieldId
-    elseif fieldName == "Channel"  then VTX.ids.channel = fieldId
-    elseif fieldName == "Pwr Lvl"  then VTX.ids.power   = fieldId
-    elseif fieldName == "Pitmode"  then VTX.ids.pitmode = fieldId
-    elseif fieldName == "Send VTx" then VTX.ids.send    = fieldId
+    if fieldName == "Band" then
+      VTX.ids.band = fieldId
+    elseif fieldName == "Channel" then
+      VTX.ids.channel = fieldId
+    elseif fieldName == "Pwr Lvl" then
+      VTX.ids.power = fieldId
+    elseif fieldName == "Pitmode" then
+      VTX.ids.pitmode = fieldId
+    elseif fieldName == "Send VTx" then
+      VTX.ids.send = fieldId
     end
 
     if #Protocol.loadQueue == 0 then
@@ -269,7 +276,6 @@ function Protocol.onSettingsEntry(data)
         Protocol.statusText = "VTX fields incomplete"
       end
     end
-
   elseif st == Protocol.STATE_READY then
     if fieldId == VTX.ids.folder then
       VTX.parseFolderName(fieldName)
@@ -286,7 +292,7 @@ crsf:registerHandler(crsf.CONST.FRAMETYPE_PARAMETER_SETTINGS_ENTRY, Protocol.onS
 
 function Protocol.tick()
   local now = getTime()
-  local st  = Protocol.state
+  local st = Protocol.state
 
   if st == Protocol.STATE_INIT then
     if crsf.hasCrsfModule() then
@@ -298,34 +304,33 @@ function Protocol.tick()
       Protocol.state = Protocol.STATE_NO_MODULE
       Protocol.statusText = "No CRSF module"
     end
-
-  elseif st == Protocol.STATE_DISCOVER_ROOT
-      or st == Protocol.STATE_DISCOVER_CHILDREN
-      or st == Protocol.STATE_DISCOVER_VTX then
+  elseif
+    st == Protocol.STATE_DISCOVER_ROOT
+    or st == Protocol.STATE_DISCOVER_CHILDREN
+    or st == Protocol.STATE_DISCOVER_VTX
+  then
     if #Protocol.loadQueue > 0 and now >= Protocol.fieldTimeout then
       local fieldId = Protocol.loadQueue[#Protocol.loadQueue]
       Protocol.sendParameterRead(fieldId)
       Protocol.fieldTimeout = now + Protocol.fieldResponseTimeout()
     end
-
   elseif st == Protocol.STATE_READY then
     if now - Protocol.lastFolderPoll >= Protocol.FOLDER_POLL_INTERVAL then
       Protocol.lastFolderPoll = now
       Protocol.sendParameterRead(VTX.ids.folder)
       Protocol.sendStatusPoll()
     end
-
   elseif st == Protocol.STATE_SENDING then
     if Protocol.writeIdx <= #Protocol.writeQueue then
-      if now - Protocol.lastWriteTime >= 5 then  -- 50ms
+      if now - Protocol.lastWriteTime >= 5 then -- 50ms
         local entry = Protocol.writeQueue[Protocol.writeIdx]
-        print(table.concat({"VTXAdmin: writing field=", entry[1], " val=", entry[2]}))
+        print(table.concat({ "VTXAdmin: writing field=", entry[1], " val=", entry[2] }))
         Protocol.sendParameterWrite(entry[1], entry[2])
         Protocol.lastWriteTime = now
         Protocol.writeIdx = Protocol.writeIdx + 1
       end
     else
-      print(table.concat({"VTXAdmin: write queue complete, ", #Protocol.writeQueue, " entries sent"}))
+      print(table.concat({ "VTXAdmin: write queue complete, ", #Protocol.writeQueue, " entries sent" }))
       Protocol.writeQueue = {}
       Protocol.writeIdx = 0
       Protocol.state = Protocol.STATE_READY
@@ -350,10 +355,26 @@ function Protocol.writeConfig()
   local d = VTX.desired
   Protocol.writeQueue = {}
 
-  print(table.concat({"VTXAdmin: writeConfig() desired: band=", d.band, " ch=", d.channel,
-    " pwr=", d.power, " pit=", tostring(d.pitmode)}))
-  print(table.concat({"VTXAdmin: writeConfig() current: band=", s.band, " ch=", s.channel,
-    " pwr=", s.power, " pit=", tostring(s.pitmode)}))
+  print(table.concat({
+    "VTXAdmin: writeConfig() desired: band=",
+    d.band,
+    " ch=",
+    d.channel,
+    " pwr=",
+    d.power,
+    " pit=",
+    tostring(d.pitmode),
+  }))
+  print(table.concat({
+    "VTXAdmin: writeConfig() current: band=",
+    s.band,
+    " ch=",
+    s.channel,
+    " pwr=",
+    s.power,
+    " pit=",
+    tostring(s.pitmode),
+  }))
 
   if d.band ~= s.band then
     Protocol.writeQueue[#Protocol.writeQueue + 1] = { VTX.ids.band, d.band }
@@ -374,7 +395,7 @@ function Protocol.writeConfig()
     Protocol.writeQueue[#Protocol.writeQueue + 1] = { VTX.ids.pitmode, desiredPit }
   end
 
-  print(table.concat({"VTXAdmin: write queue built, ", #Protocol.writeQueue, " field(s)"}))
+  print(table.concat({ "VTXAdmin: write queue built, ", #Protocol.writeQueue, " field(s)" }))
 
   if #Protocol.writeQueue > 0 then
     Protocol.writeIdx = 1
@@ -408,17 +429,17 @@ Presets = {
   PATH = "/WIDGETS/ELRSVTXAdmin/presets.txt",
 
   -- Preset data
-  items       = {},
-  enabled     = false,
-  source      = 0,        -- 6POS source ID (0 = not configured)
-  autoPushVtx = false,    -- auto push to VTX on 6POS change
-  pushSource  = 0,        -- source ID for manual "Send VTx" trigger (0 = not configured)
+  items = {},
+  enabled = false,
+  source = 0, -- 6POS source ID (0 = not configured)
+  autoPushVtx = false, -- auto push to VTX on 6POS change
+  pushSource = 0, -- source ID for manual "Send VTx" trigger (0 = not configured)
 
   -- 6POS processing state
-  lastPos     = -1,
-  stablePos   = -1,
-  stableTime  = 0,
-  DEBOUNCE    = 20,       -- 200ms in getTime() ticks (10ms each)
+  lastPos = -1,
+  stablePos = -1,
+  stableTime = 0,
+  DEBOUNCE = 20, -- 200ms in getTime() ticks (10ms each)
 
   -- Push source edge detection state
   pushLastVal = -1,
@@ -444,8 +465,7 @@ local function splitBandChannel(val)
   if not comma then
     return nil, nil
   end
-  return tonumber(string.sub(val, 1, comma - 1)),
-         tonumber(string.sub(val, comma + 1))
+  return tonumber(string.sub(val, 1, comma - 1)), tonumber(string.sub(val, comma + 1))
 end
 
 --- File format: key=value lines (one per line).
@@ -503,34 +523,42 @@ function Presets.load()
       p[i] = { band = 5, channel = i }
     end
   end
-  Presets.items       = p
-  Presets.enabled     = enabled
-  Presets.source      = source
+  Presets.items = p
+  Presets.enabled = enabled
+  Presets.source = source
   Presets.autoPushVtx = autoPushVtx
-  Presets.pushSource  = pushSource
+  Presets.pushSource = pushSource
 
-  print(table.concat({"VTXAdmin: presets loaded - enabled=", tostring(enabled),
-    " source=", source, " autoPushVtx=", tostring(autoPushVtx), " pushSource=", pushSource}))
+  print(table.concat({
+    "VTXAdmin: presets loaded - enabled=",
+    tostring(enabled),
+    " source=",
+    source,
+    " autoPushVtx=",
+    tostring(autoPushVtx),
+    " pushSource=",
+    pushSource,
+  }))
   for i = 1, 6 do
-    print(table.concat({"VTXAdmin:   preset ", i, ": band=", p[i].band, " ch=", p[i].channel}))
+    print(table.concat({ "VTXAdmin:   preset ", i, ": band=", p[i].band, " ch=", p[i].channel }))
   end
 end
 
 function Presets.save()
-  print(table.concat({"VTXAdmin: saving presets to ", Presets.PATH}))
+  print(table.concat({ "VTXAdmin: saving presets to ", Presets.PATH }))
   local f = io.open(Presets.PATH, "w")
   if f then
-    io.write(f, table.concat({"enabled=", Presets.enabled and "1" or "0", "\n"}))
-    io.write(f, table.concat({"source=", Presets.source, "\n"}))
-    io.write(f, table.concat({"autoPushVtx=", Presets.autoPushVtx and "1" or "0", "\n"}))
-    io.write(f, table.concat({"pushSource=", Presets.pushSource, "\n"}))
+    io.write(f, table.concat({ "enabled=", Presets.enabled and "1" or "0", "\n" }))
+    io.write(f, table.concat({ "source=", Presets.source, "\n" }))
+    io.write(f, table.concat({ "autoPushVtx=", Presets.autoPushVtx and "1" or "0", "\n" }))
+    io.write(f, table.concat({ "pushSource=", Presets.pushSource, "\n" }))
     for i = 1, 6 do
-      io.write(f, table.concat({"p", i, "=", Presets.items[i].band, ",", Presets.items[i].channel, "\n"}))
+      io.write(f, table.concat({ "p", i, "=", Presets.items[i].band, ",", Presets.items[i].channel, "\n" }))
     end
     io.close(f)
     print("VTXAdmin: presets saved OK")
   else
-    print(table.concat({"VTXAdmin: ERROR - could not open ", Presets.PATH, " for writing"}))
+    print(table.concat({ "VTXAdmin: ERROR - could not open ", Presets.PATH, " for writing" }))
   end
 end
 
@@ -587,13 +615,13 @@ function Presets.process()
   if preset and preset.band > 0 then
     VTX.desired.band = preset.band
     VTX.desired.channel = preset.channel
-    print(table.concat({"VTXAdmin: 6POS pos=", pos, " -> band=", preset.band, " ch=", preset.channel}))
+    print(table.concat({ "VTXAdmin: 6POS pos=", pos, " -> band=", preset.band, " ch=", preset.channel }))
     Protocol.writeConfig()
     if Presets.autoPushVtx then
       Protocol.pushToVtx()
     end
   else
-    print(table.concat({"VTXAdmin: 6POS pos=", pos, " -> Off (skipped)"}))
+    print(table.concat({ "VTXAdmin: 6POS pos=", pos, " -> Off (skipped)" }))
   end
 end
 
@@ -707,7 +735,7 @@ function VTXDisplay.bandChannel()
   if not Protocol.isActive() or VTX.state.band == 0 then
     return ""
   end
-  return table.concat({VTX.state.bandLetter, VTX.state.channel})
+  return table.concat({ VTX.state.bandLetter, VTX.state.channel })
 end
 
 --- Short status message for non-VTX states, "" when VTX is tuned.
@@ -725,47 +753,66 @@ function VTXDisplay.statusText()
 end
 
 function VTXDisplay.detailLine()
-  if not Protocol.isActive() then return "" end
-  if VTX.state.band == 0 then return "" end
-  local pwr = VTX.state.power > 0 and table.concat({"P", VTX.state.power}) or "P-"
+  if not Protocol.isActive() then
+    return ""
+  end
+  if VTX.state.band == 0 then
+    return ""
+  end
+  local pwr = VTX.state.power > 0 and table.concat({ "P", VTX.state.power }) or "P-"
   local pit = VTX.state.pitmode and " Pit Mode On" or " Pit Mode Off"
-  return table.concat({pwr, pit})
+  return table.concat({ pwr, pit })
 end
 
 function VTXDisplay.powerShort()
-  if not Protocol.isActive() or VTX.state.band == 0 then return "" end
-  return VTX.state.power > 0 and table.concat({"P", VTX.state.power}) or "P-"
+  if not Protocol.isActive() or VTX.state.band == 0 then
+    return ""
+  end
+  return VTX.state.power > 0 and table.concat({ "P", VTX.state.power }) or "P-"
 end
 
 function VTXDisplay.detailLong()
-  if not Protocol.isActive() then return "" end
-  if VTX.state.band == 0 then return "VTX Disabled" end
-  local pwr = VTX.state.power > 0 and table.concat({"Power ", VTX.state.power}) or "Power -"
+  if not Protocol.isActive() then
+    return ""
+  end
+  if VTX.state.band == 0 then
+    return "VTX Disabled"
+  end
+  local pwr = VTX.state.power > 0 and table.concat({ "Power ", VTX.state.power }) or "Power -"
   local pit = VTX.state.pitmode and "  Pit Mode On" or "  Pit Mode Off"
-  return table.concat({pwr, pit})
+  return table.concat({ pwr, pit })
 end
 
 function VTXDisplay.mainColor()
-  if VTX.state.pitmode then return RED end
+  if VTX.state.pitmode then
+    return RED
+  end
   return COLOR_THEME_PRIMARY1
 end
 
 function VTXDisplay.build6posLabels()
-  if Protocol.state == Protocol.STATE_NO_MODULE then return {} end
-  if not Presets.enabled then return {} end
+  if Protocol.state == Protocol.STATE_NO_MODULE then
+    return {}
+  end
+  if not Presets.enabled then
+    return {}
+  end
   local labels = {}
   for i = 1, 6 do
     local idx = i
     labels[#labels + 1] = {
-      type = lvgl.LABEL, font = SMLSIZE,
+      type = lvgl.LABEL,
+      font = SMLSIZE,
       color = function()
         return (Presets.lastPos == idx) and COLOR_THEME_PRIMARY1 or COLOR_THEME_DISABLED
       end,
       text = function()
         local p = Presets.items[idx]
         local band = VTX.BAND_NAMES[p.band] or "?"
-        if band == "Off" then return table.concat({idx, ":Off"}) end
-        return table.concat({idx, ":", band, p.channel})
+        if band == "Off" then
+          return table.concat({ idx, ":Off" })
+        end
+        return table.concat({ idx, ":", band, p.channel })
       end,
     }
   end
@@ -774,14 +821,18 @@ end
 
 function VTXDisplay.buildCheatsheet()
   local labels = VTXDisplay.build6posLabels()
-  if #labels == 0 then return nil end
+  if #labels == 0 then
+    return nil
+  end
   return {
     type = lvgl.BOX,
     flexFlow = lvgl.FLOW_ROW,
     borderPad = 0,
     flexPad = lvgl.PAD_TINY,
     align = LEFT,
-    visible = function() return Protocol.state ~= Protocol.STATE_NO_MODULE end,
+    visible = function()
+      return Protocol.state ~= Protocol.STATE_NO_MODULE
+    end,
     children = labels,
   }
 end
@@ -794,15 +845,15 @@ end
 local function getScreenId()
   local w, h = LCD_W, LCD_H
   if w >= 800 then
-    return "hd"       -- 800x480
+    return "hd" -- 800x480
   elseif w < h then
     return "portrait" -- 320x480 (EL18)
   elseif w <= 320 then
-    return "small"    -- 320x240
+    return "small" -- 320x240
   elseif h >= 320 then
-    return "sd_tall"  -- 480x320 (TX16S)
+    return "sd_tall" -- 480x320 (TX16S)
   else
-    return "sd"       -- 480x272
+    return "sd" -- 480x272
   end
 end
 
@@ -813,7 +864,7 @@ local function bgOpacity(opts)
 end
 
 local screenId = getScreenId()
-local uiPath = table.concat({"/WIDGETS/ELRSVTXAdmin/ui/", screenId, ".lua"})
+local uiPath = table.concat({ "/WIDGETS/ELRSVTXAdmin/ui/", screenId, ".lua" })
 local WidgetUI = loadScript(uiPath)({
   crsf = crsf,
   VTX = VTX,
@@ -844,7 +895,10 @@ local function createRow(container, label, hint)
   }
   if hint then
     labelChildren[#labelChildren + 1] = {
-      type = lvgl.LABEL, text = hint, color = COLOR_THEME_DISABLED, font = SMLSIZE,
+      type = lvgl.LABEL,
+      text = hint,
+      color = COLOR_THEME_DISABLED,
+      font = SMLSIZE,
       w = lvgl.PERCENT_SIZE + 100,
     }
   end
@@ -879,7 +933,8 @@ end
 local function createNumberRow(container, label, min, max, getFn, setFn, editedFn, displayFn)
   local ctrl = createRow(container, label)
   ctrl:numberEdit({
-    min = min, max = max,
+    min = min,
+    max = max,
     get = getFn,
     set = setFn,
     edited = editedFn,
@@ -909,8 +964,13 @@ local function createHintRow(container, text)
     w = lvgl.PERCENT_SIZE + 100,
     thickness = 0,
     children = {
-      { type = lvgl.LABEL, text = text, color = COLOR_THEME_DISABLED, font = SMLSIZE,
-        w = lvgl.PERCENT_SIZE + 100 },
+      {
+        type = lvgl.LABEL,
+        text = text,
+        color = COLOR_THEME_DISABLED,
+        font = SMLSIZE,
+        w = lvgl.PERCENT_SIZE + 100,
+      },
     },
   })
 end
@@ -949,7 +1009,9 @@ local function buildFullScreen()
       end
       return Protocol.statusText
     end,
-    back = function() lvgl.exitFullScreen() end,
+    back = function()
+      lvgl.exitFullScreen()
+    end,
   })
 
   -- No module — show checklist instead of controls (matches expresslrs.lua NoModuleDialog)
@@ -963,7 +1025,11 @@ local function buildFullScreen()
         { type = lvgl.LABEL, text = "No module found. Check Model Setup:", color = COLOR_THEME_PRIMARY1 },
         { type = lvgl.LABEL, text = "- Internal/External module enabled", color = COLOR_THEME_DISABLED },
         { type = lvgl.LABEL, text = "- Protocol set to CRSF", color = COLOR_THEME_DISABLED },
-        { type = lvgl.LABEL, text = "- Baud rate: 400k (250Hz), 921k (500Hz), 1.87M (F1000)", color = COLOR_THEME_DISABLED },
+        {
+          type = lvgl.LABEL,
+          text = "- Baud rate: 400k (250Hz), 921k (500Hz), 1.87M (F1000)",
+          color = COLOR_THEME_DISABLED,
+        },
       },
     })
     return
@@ -978,39 +1044,39 @@ local function buildFullScreen()
   -- VTX Settings section
   createSectionHeader(fields, "VTX Settings")
 
-  createChoiceRow(fields, "Band",
-    { "Off", "A", "B", "E", "F", "R", "L" },
-    function() return d.band + 1 end,
-    function(idx)
-      d.band = idx - 1
-      Protocol.writeConfig()
-    end)
+  createChoiceRow(fields, "Band", { "Off", "A", "B", "E", "F", "R", "L" }, function()
+    return d.band + 1
+  end, function(idx)
+    d.band = idx - 1
+    Protocol.writeConfig()
+  end)
 
-  createNumberRow(fields, "Channel", 1, 8,
-    function() return d.channel end,
-    function(v) d.channel = v end,
-    function(v)
-      d.channel = v
-      Protocol.writeConfig()
-    end)
+  createNumberRow(fields, "Channel", 1, 8, function()
+    return d.channel
+  end, function(v)
+    d.channel = v
+  end, function(v)
+    d.channel = v
+    Protocol.writeConfig()
+  end)
 
-  createNumberRow(fields, "Power Level", 0, 8,
-    function() return d.power end,
-    function(v) d.power = v end,
-    function(v)
-      d.power = v
-      Protocol.writeConfig()
-    end,
-    function(v)
-      return v == 0 and "-" or tostring(v)
-    end)
+  createNumberRow(fields, "Power Level", 0, 8, function()
+    return d.power
+  end, function(v)
+    d.power = v
+  end, function(v)
+    d.power = v
+    Protocol.writeConfig()
+  end, function(v)
+    return v == 0 and "-" or tostring(v)
+  end)
 
-  createToggleRow(fields, "Pit Mode",
-    function() return d.pitmode end,
-    function(v)
-      d.pitmode = v
-      Protocol.writeConfig()
-    end)
+  createToggleRow(fields, "Pit Mode", function()
+    return d.pitmode
+  end, function(v)
+    d.pitmode = v
+    Protocol.writeConfig()
+  end)
 
   fields:button({
     text = function()
@@ -1024,43 +1090,49 @@ local function buildFullScreen()
       Protocol.writeConfig()
       Protocol.pushToVtx()
     end,
-    active = function() return Protocol.isReady() end,
+    active = function()
+      return Protocol.isReady()
+    end,
   })
 
   -- 6POS Quick Change section
   createSectionHeader(fields, "6POS Quick Change")
 
-  createToggleRow(fields, "Enabled",
-    function() return Presets.enabled and 1 or 0 end,
-    function(v)
-      Presets.enabled = (v == 1)
-      Presets.save()
-    end)
+  createToggleRow(fields, "Enabled", function()
+    return Presets.enabled and 1 or 0
+  end, function(v)
+    Presets.enabled = (v == 1)
+    Presets.save()
+  end)
 
-  createSourceRow(fields, "Source",
-    function() return Presets.source end,
-    function(v)
-      Presets.source = v or 0
-      Presets.save()
+  createSourceRow(fields, "Source", function()
+    return Presets.source
+  end, function(v)
+    Presets.source = v or 0
+    Presets.save()
+  end, lvgl.SRC_STICK + lvgl.SRC_POT + lvgl.SRC_SWITCH)
+
+  createToggleRow(fields, "Auto Push to VTX", function()
+    return Presets.autoPushVtx and 1 or 0
+  end, function(v)
+    Presets.autoPushVtx = (v == 1)
+    Presets.save()
+  end)
+
+  createSourceRow(
+    fields,
+    "Send VTx Trigger",
+    function()
+      return Presets.pushSource
     end,
-    lvgl.SRC_STICK + lvgl.SRC_POT + lvgl.SRC_SWITCH)
-
-  createToggleRow(fields, "Auto Push to VTX",
-    function() return Presets.autoPushVtx and 1 or 0 end,
-    function(v)
-      Presets.autoPushVtx = (v == 1)
-      Presets.save()
-    end)
-
-  createSourceRow(fields, "Send VTx Trigger",
-    function() return Presets.pushSource end,
     function(v)
       Presets.pushSource = v or 0
       Presets.pushLastVal = -1
       Presets.save()
     end,
     lvgl.SRC_STICK + lvgl.SRC_POT + lvgl.SRC_SWITCH,
-    "Assign a switch or button to manually push the current VTX config to the receiver.")
+    "Assign a switch or button to manually push the current VTX config to the receiver."
+  )
 
   -- Presets section
   createSectionHeader(fields, "Presets")
@@ -1070,11 +1142,13 @@ local function buildFullScreen()
   local bandValues = { "Off", "A", "B", "E", "F", "R", "L" }
   for i = 1, 6 do
     local idx = i
-    local ctrl = createRow(fields, table.concat({"Preset ", idx}))
+    local ctrl = createRow(fields, table.concat({ "Preset ", idx }))
 
     ctrl:choice({
       values = bandValues,
-      get = function() return Presets.items[idx].band + 1 end,
+      get = function()
+        return Presets.items[idx].band + 1
+      end,
       set = function(v)
         Presets.items[idx].band = v - 1
         Presets.save()
@@ -1082,13 +1156,18 @@ local function buildFullScreen()
     })
 
     ctrl:numberEdit({
-      min = 1, max = 8,
-      get = function() return Presets.items[idx].channel end,
+      min = 1,
+      max = 8,
+      get = function()
+        return Presets.items[idx].channel
+      end,
       set = function(v)
         Presets.items[idx].channel = v
         Presets.save()
-      end, 
-      visible = function() return Presets.items[idx].band > 0 end,
+      end,
+      visible = function()
+        return Presets.items[idx].band > 0
+      end,
     })
   end
 end

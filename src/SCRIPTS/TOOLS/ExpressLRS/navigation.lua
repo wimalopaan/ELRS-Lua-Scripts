@@ -14,7 +14,7 @@ local Navigation = {
 
 function Navigation.getCurrent()
   local top = Navigation.stack[#Navigation.stack]
-  return top and top.id or nil  -- nil if at root (or device root)
+  return top and top.id or nil -- nil if at root (or device root)
 end
 
 function Navigation.isAtRoot()

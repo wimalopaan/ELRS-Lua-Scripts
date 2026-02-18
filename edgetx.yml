@@ -1,0 +1,1699 @@
+---
+base: luaedgetx
+name: edgetx
+
+globals:
+
+  # ---------------------------------------------------------------------------
+  # Global functions (api_general.cpp — etxlib)
+  # ---------------------------------------------------------------------------
+
+  getTime:
+    args: []
+  getDateTime:
+    args: []
+  getRtcTime:
+    args: []
+  getVersion:
+    args: []
+  getGeneralSettings:
+    args: []
+  getGlobalTimer:
+    args: []
+  getRotEncSpeed:
+    args: []
+  getRotEncMode:
+    args: []
+  getValue:
+    args:
+      - type: any
+  getOutputValue:
+    args:
+      - type: number
+  getSourceValue:
+    args:
+      - type: any
+  getTrainerStatus:
+    args: []
+  getRAS:
+    args: []
+  getTxGPS:
+    args: []
+  getFieldInfo:
+    args:
+      - type: any
+  getSourceInfo:
+    args:
+      - type: any
+  getFlightMode:
+    args:
+      - type: number
+        required: false
+  playFile:
+    args:
+      - type: string
+      - type: number
+        required: false
+  playNumber:
+    args:
+      - type: number
+      - type: number
+      - type: number
+        required: false
+      - type: number
+        required: false
+  playDuration:
+    args:
+      - type: number
+      - type: number
+        required: false
+      - type: number
+        required: false
+  playTone:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+      - type: number
+        required: false
+      - type: number
+        required: false
+  playHaptic:
+    args:
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  flushAudio:
+    args: []
+  screenshot:
+    args: []
+  popupInput:
+    args:
+      - type: string
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+  popupWarning:
+    args:
+      - type: string
+      - type: number
+  popupConfirmation:
+    args:
+      - type: string
+      - type: any
+        required: false
+      - type: number
+        required: false
+  defaultStick:
+    args:
+      - type: number
+  defaultChannel:
+    args:
+      - type: number
+  getRSSI:
+    args: []
+  killEvents:
+    args:
+      - type: number
+  loadScript:
+    args:
+      - type: string
+        required: false
+      - type: string
+        required: false
+      - type: any
+        required: false
+  getUsage:
+    args: []
+  getAvailableMemory:
+    args: []
+  resetGlobalTimer:
+    args:
+      - type: string
+        required: false
+  GREY:
+    args:
+      - type: number
+  accessTelemetryPush:
+    args:
+      - type: "..."
+        required: false
+  sportTelemetryPop:
+    args: []
+  sportTelemetryPush:
+    args:
+      - type: number
+        required: false
+      - type: number
+        required: false
+      - type: number
+        required: false
+      - type: number
+        required: false
+  setTelemetryValue:
+    args:
+      - type: "..."
+        required: false
+  crossfireTelemetryPop:
+    args: []
+  crossfireTelemetryPush:
+    args:
+      - type: number
+        required: false
+      - type: table
+        required: false
+  ghostTelemetryPop:
+    args: []
+  ghostTelemetryPush:
+    args:
+      - type: "..."
+        required: false
+  multiBuffer:
+    args:
+      - type: "..."
+        required: false
+  setSerialBaudrate:
+    args:
+      - type: number
+  serialWrite:
+    args:
+      - type: string
+  serialRead:
+    args:
+      - type: number
+        required: false
+  serialGetPower:
+    args: []
+  serialSetPower:
+    args:
+      - type: number
+  setShmVar:
+    args:
+      - type: number
+      - type: number
+  getShmVar:
+    args:
+      - type: number
+  setStickySwitch:
+    args:
+      - type: number
+      - type: bool
+  getLogicalSwitchValue:
+    args:
+      - type: number
+  getSwitchInfo:
+    args:
+      - type: number
+  getSwitchIndex:
+    args:
+      - type: string
+  getSwitchName:
+    args:
+      - type: number
+  getSwitchValue:
+    args:
+      - type: number
+  switches:
+    args:
+      - type: number
+        required: false
+      - type: number
+        required: false
+  getSourceIndex:
+    args:
+      - type: string
+  getSourceName:
+    args:
+      - type: number
+  sources:
+    args:
+      - type: number
+        required: false
+      - type: number
+        required: false
+  setRGBLedColor:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+  applyRGBLedColors:
+    args: []
+  setCFSLedColor:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+  getStickMode:
+    args: []
+  setIMU_X:
+    args:
+      - type: number
+  setIMU_Y:
+    args:
+      - type: number
+
+  # ---------------------------------------------------------------------------
+  # lcd module (api_colorlcd.cpp, api_stdlcd.cpp)
+  # ---------------------------------------------------------------------------
+
+  lcd.refresh:
+    args: []
+  lcd.clear:
+    args:
+      - type: number
+        required: false
+  lcd.resetBacklightTimeout:
+    args: []
+  lcd.drawPoint:
+    args:
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  lcd.drawLine:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  lcd.drawRectangle:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+      - type: number
+        required: false
+      - type: number
+        required: false
+  lcd.drawFilledRectangle:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+      - type: number
+        required: false
+  lcd.invertRect:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+  lcd.drawText:
+    args:
+      - type: number
+      - type: number
+      - type: string
+      - type: number
+        required: false
+      - type: number
+        required: false
+  lcd.drawTextLines:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: string
+      - type: number
+        required: false
+      - type: number
+        required: false
+  lcd.sizeText:
+    args:
+      - type: string
+      - type: number
+        required: false
+  lcd.drawTimer:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+      - type: number
+        required: false
+  lcd.drawNumber:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+      - type: number
+        required: false
+  lcd.drawChannel:
+    args:
+      - type: number
+      - type: number
+      - type: any
+      - type: number
+        required: false
+  lcd.drawSwitch:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  lcd.drawSource:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  lcd.drawGauge:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  lcd.drawPixmap:
+    args:
+      - type: number
+      - type: number
+      - type: string
+  lcd.drawScreenTitle:
+    args:
+      - type: string
+      - type: number
+      - type: number
+  lcd.drawCombobox:
+    args:
+      - type: "..."
+        required: false
+  lcd.drawBitmap:
+    args:
+      - type: any
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  lcd.drawBitmapPattern:
+    args:
+      - type: any
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  lcd.drawBitmapPatternPie:
+    args:
+      - type: any
+      - type: number
+      - type: number
+      - type: number
+        required: false
+      - type: number
+        required: false
+  lcd.setColor:
+    args:
+      - type: number
+      - type: number
+  lcd.getColor:
+    args:
+      - type: number
+  lcd.RGB:
+    args:
+      - type: number
+      - type: number
+        required: false
+      - type: number
+        required: false
+  lcd.drawCircle:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  lcd.drawFilledCircle:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  lcd.drawTriangle:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  lcd.drawFilledTriangle:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  lcd.drawArc:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  lcd.drawPie:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  lcd.drawAnnulus:
+    args:
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+      - type: number
+        required: false
+  lcd.drawLineWithClipping:
+    args:
+      - type: "..."
+        required: false
+  lcd.drawHudRectangle:
+    args:
+      - type: "..."
+        required: false
+  lcd.exitFullScreen:
+    args: []
+  lcd.getLastPos:
+    args: []
+  lcd.getLastRightPos:
+    args: []
+  lcd.getLastLeftPos:
+    args: []
+
+  # ---------------------------------------------------------------------------
+  # model module (api_model.cpp)
+  # ---------------------------------------------------------------------------
+
+  model.getInfo:
+    args: []
+  model.setInfo:
+    args:
+      - type: table
+  model.getModule:
+    args:
+      - type: number
+  model.setModule:
+    args:
+      - type: number
+      - type: table
+  model.getTimer:
+    args:
+      - type: number
+  model.setTimer:
+    args:
+      - type: number
+      - type: table
+  model.resetTimer:
+    args:
+      - type: number
+  model.deleteFlightModes:
+    args: []
+  model.getFlightMode:
+    args:
+      - type: number
+  model.setFlightMode:
+    args:
+      - type: number
+      - type: table
+  model.getInputsCount:
+    args: []
+  model.getInput:
+    args:
+      - type: number
+      - type: number
+  model.insertInput:
+    args:
+      - type: number
+      - type: number
+      - type: table
+  model.deleteInput:
+    args:
+      - type: number
+      - type: number
+  model.deleteInputs:
+    args: []
+  model.defaultInputs:
+    args: []
+  model.getMixesCount:
+    args: []
+  model.getMix:
+    args:
+      - type: number
+      - type: number
+  model.insertMix:
+    args:
+      - type: number
+      - type: number
+      - type: table
+  model.deleteMix:
+    args:
+      - type: number
+      - type: number
+  model.deleteMixes:
+    args: []
+  model.getLogicalSwitch:
+    args:
+      - type: number
+  model.setLogicalSwitch:
+    args:
+      - type: number
+      - type: table
+  model.getCustomFunction:
+    args:
+      - type: number
+  model.setCustomFunction:
+    args:
+      - type: number
+      - type: table
+  model.getCurve:
+    args:
+      - type: number
+  model.setCurve:
+    args:
+      - type: number
+      - type: table
+  model.getOutput:
+    args:
+      - type: number
+  model.setOutput:
+    args:
+      - type: number
+      - type: table
+  model.getGlobalVariable:
+    args:
+      - type: number
+      - type: number
+  model.setGlobalVariable:
+    args:
+      - type: number
+      - type: number
+      - type: number
+  model.getGlobalVariableDetails:
+    args:
+      - type: number
+  model.setGlobalVariableDetails:
+    args:
+      - type: number
+      - type: table
+  model.getSensor:
+    args:
+      - type: number
+  model.resetSensor:
+    args:
+      - type: number
+  model.getSwashRing:
+    args: []
+  model.setSwashRing:
+    args:
+      - type: table
+
+  # ---------------------------------------------------------------------------
+  # lvgl module (api_colorlcd_lvgl.cpp)
+  # ---------------------------------------------------------------------------
+
+  # Core
+  lvgl.clear:
+    args:
+      - type: any
+        required: false
+  lvgl.build:
+    args:
+      - type: any
+        required: false
+      - type: table
+        required: false
+  lvgl.isAppMode:
+    args: []
+  lvgl.isFullScreen:
+    args: []
+  lvgl.exitFullScreen:
+    args: []
+  lvgl.getContext:
+    args: []
+
+  # Object manipulation
+  lvgl.set:
+    args:
+      - type: any
+      - type: table
+  lvgl.show:
+    args:
+      - type: any
+  lvgl.hide:
+    args:
+      - type: any
+  lvgl.enable:
+    args:
+      - type: any
+  lvgl.disable:
+    args:
+      - type: any
+  lvgl.close:
+    args:
+      - type: any
+  lvgl.getScrollPos:
+    args:
+      - type: any
+
+  # Widget creators — accept optional parent widget, then settings table
+  lvgl.label:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.rectangle:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.hline:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.vline:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.line:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.triangle:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.circle:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.arc:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.image:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.qrcode:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.box:
+    args:
+      - type: any
+      - type: table
+        required: false
+
+  # Widget creators — fullscreen only, optional parent + settings table
+  lvgl.button:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.momentaryButton:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.toggle:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.textEdit:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.numberEdit:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.choice:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.slider:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.verticalSlider:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.font:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.align:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.color:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.timer:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.switch:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.source:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.file:
+    args:
+      - type: any
+      - type: table
+        required: false
+  lvgl.setting:
+    args:
+      - type: any
+      - type: table
+        required: false
+
+  # Container creators — single settings table
+  lvgl.page:
+    args:
+      - type: table
+  lvgl.dialog:
+    args:
+      - type: table
+
+  # Popup creators — single settings table
+  lvgl.confirm:
+    args:
+      - type: table
+  lvgl.message:
+    args:
+      - type: table
+  lvgl.menu:
+    args:
+      - type: table
+
+  # ---------------------------------------------------------------------------
+  # dir module (api_filesystem.cpp)
+  # ---------------------------------------------------------------------------
+
+  dir.dir:
+    args:
+      - type: string
+        required: false
+  dir.fstat:
+    args:
+      - type: string
+        required: false
+  dir.del:
+    args:
+      - type: string
+        required: false
+  dir.chdir:
+    args:
+      - type: string
+        required: false
+  dir.mkdir:
+    args:
+      - type: string
+  dir.rename:
+    args:
+      - type: string
+      - type: string
+
+  # ---------------------------------------------------------------------------
+  # bitmap module (api_colorlcd.cpp)
+  # ---------------------------------------------------------------------------
+
+  bitmap.open:
+    args:
+      - type: string
+  bitmap.getSize:
+    args:
+      - type: any
+  bitmap.resize:
+    args:
+      - type: any
+      - type: number
+      - type: number
+  bitmap.toMask:
+    args:
+      - type: any
+
+  Bitmap.open:
+    args:
+      - type: string
+  Bitmap.getSize:
+    args:
+      - type: any
+  Bitmap.resize:
+    args:
+      - type: any
+      - type: number
+      - type: number
+  Bitmap.toMask:
+    args:
+      - type: any
+
+  # ---------------------------------------------------------------------------
+  # Display flags and font sizes (api_general.cpp — etxcst)
+  # ---------------------------------------------------------------------------
+
+  FULLSCALE:
+    property: read-only
+  STDSIZE:
+    property: read-only
+  XXLSIZE:
+    property: read-only
+  DBLSIZE:
+    property: read-only
+  MIDSIZE:
+    property: read-only
+  SMLSIZE:
+    property: read-only
+  TINSIZE:
+    property: read-only
+  BOLD:
+    property: read-only
+  BLINK:
+    property: read-only
+  INVERS:
+    property: read-only
+  VCENTER:
+    property: read-only
+  VTOP:
+    property: read-only
+  VBOTTOM:
+    property: read-only
+  RIGHT:
+    property: read-only
+  LEFT:
+    property: read-only
+  CENTER:
+    property: read-only
+  PREC1:
+    property: read-only
+  PREC2:
+    property: read-only
+  SHADOWED:
+    property: read-only
+  FIXEDWIDTH:
+    property: read-only
+
+  # ---------------------------------------------------------------------------
+  # Input / source types
+  # ---------------------------------------------------------------------------
+
+  VALUE:
+    property: read-only
+  SOURCE:
+    property: read-only
+  REPLACE:
+    property: read-only
+  MIXSRC_MIN:
+    property: read-only
+  MIXSRC_MAX:
+    property: read-only
+  MIXSRC_FIRST_INPUT:
+    property: read-only
+  MIXSRC_CH1:
+    property: read-only
+  SWSRC_LAST:
+    property: read-only
+  SWITCH_COUNT:
+    property: read-only
+  MAX_SENSORS:
+    property: read-only
+  MAX_OUTPUT_CHANNELS:
+    property: read-only
+  LIMIT_EXT_PERCENT:
+    property: read-only
+  LIMIT_STD_PERCENT:
+    property: read-only
+
+  # ---------------------------------------------------------------------------
+  # Logical switch function constants
+  # ---------------------------------------------------------------------------
+
+  LS_FUNC_NONE:
+    property: read-only
+  LS_FUNC_VEQUAL:
+    property: read-only
+  LS_FUNC_VALMOSTEQUAL:
+    property: read-only
+  LS_FUNC_VPOS:
+    property: read-only
+  LS_FUNC_VNEG:
+    property: read-only
+  LS_FUNC_APOS:
+    property: read-only
+  LS_FUNC_ANEG:
+    property: read-only
+  LS_FUNC_AND:
+    property: read-only
+  LS_FUNC_OR:
+    property: read-only
+  LS_FUNC_XOR:
+    property: read-only
+  LS_FUNC_EDGE:
+    property: read-only
+  LS_FUNC_EQUAL:
+    property: read-only
+  LS_FUNC_GREATER:
+    property: read-only
+  LS_FUNC_LESS:
+    property: read-only
+  LS_FUNC_DIFFEGREATER:
+    property: read-only
+  LS_FUNC_ADIFFEGREATER:
+    property: read-only
+  LS_FUNC_TIMER:
+    property: read-only
+  LS_FUNC_RANGE:
+    property: read-only
+  LS_FUNC_STICKY:
+    property: read-only
+
+  # ---------------------------------------------------------------------------
+  # Custom function constants
+  # ---------------------------------------------------------------------------
+
+  FUNC_OVERRIDE_CHANNEL:
+    property: read-only
+  FUNC_TRAINER:
+    property: read-only
+  FUNC_INSTANT_TRIM:
+    property: read-only
+  FUNC_RESET:
+    property: read-only
+  FUNC_SET_TIMER:
+    property: read-only
+  FUNC_ADJUST_GVAR:
+    property: read-only
+  FUNC_VOLUME:
+    property: read-only
+  FUNC_SET_FAILSAFE:
+    property: read-only
+  FUNC_RANGECHECK:
+    property: read-only
+  FUNC_BIND:
+    property: read-only
+  FUNC_PLAY_SOUND:
+    property: read-only
+  FUNC_PLAY_TRACK:
+    property: read-only
+  FUNC_PLAY_VALUE:
+    property: read-only
+  FUNC_PLAY_SCRIPT:
+    property: read-only
+  FUNC_BACKGND_MUSIC:
+    property: read-only
+  FUNC_BACKGND_MUSIC_PAUSE:
+    property: read-only
+  FUNC_VARIO:
+    property: read-only
+  FUNC_HAPTIC:
+    property: read-only
+  FUNC_LOGS:
+    property: read-only
+  FUNC_BACKLIGHT:
+    property: read-only
+  FUNC_SCREENSHOT:
+    property: read-only
+  FUNC_RACING_MODE:
+    property: read-only
+  FUNC_PUSH_CUST_SWITCH:
+    property: read-only
+  FUNC_SET_SCREEN:
+    property: read-only
+  FUNC_DISABLE_TOUCH:
+    property: read-only
+
+  # ---------------------------------------------------------------------------
+  # Widget option type constants (COLORLCD)
+  # ---------------------------------------------------------------------------
+
+  COLOR:
+    property: read-only
+  BOOL:
+    property: read-only
+  STRING:
+    property: read-only
+  TIMER:
+    property: read-only
+  TEXT_SIZE:
+    property: read-only
+  ALIGNMENT:
+    property: read-only
+  SWITCH:
+    property: read-only
+  SLIDER:
+    property: read-only
+  CHOICE:
+    property: read-only
+  FILE:
+    property: read-only
+  MENU_HEADER_HEIGHT:
+    property: read-only
+
+  # ---------------------------------------------------------------------------
+  # Color constants (api_colorlcd.cpp — colorlib)
+  # ---------------------------------------------------------------------------
+
+  COLOR_THEME_PRIMARY1:
+    property: read-only
+  COLOR_THEME_PRIMARY2:
+    property: read-only
+  COLOR_THEME_PRIMARY3:
+    property: read-only
+  COLOR_THEME_SECONDARY1:
+    property: read-only
+  COLOR_THEME_SECONDARY2:
+    property: read-only
+  COLOR_THEME_SECONDARY3:
+    property: read-only
+  COLOR_THEME_FOCUS:
+    property: read-only
+  COLOR_THEME_EDIT:
+    property: read-only
+  COLOR_THEME_ACTIVE:
+    property: read-only
+  COLOR_THEME_WARNING:
+    property: read-only
+  COLOR_THEME_DISABLED:
+    property: read-only
+  CUSTOM_COLOR:
+    property: read-only
+  BLACK:
+    property: read-only
+  WHITE:
+    property: read-only
+  LIGHTWHITE:
+    property: read-only
+  LIGHTGREY:
+    property: read-only
+  DARKGREY:
+    property: read-only
+  RED:
+    property: read-only
+  DARKRED:
+    property: read-only
+  LIGHTRED:
+    property: read-only
+  GREEN:
+    property: read-only
+  DARKGREEN:
+    property: read-only
+  BRIGHTGREEN:
+    property: read-only
+  BLUE:
+    property: read-only
+  DARKBLUE:
+    property: read-only
+  CYAN:
+    property: read-only
+  YELLOW:
+    property: read-only
+  LIGHTBROWN:
+    property: read-only
+  DARKBROWN:
+    property: read-only
+  ORANGE:
+    property: read-only
+  MAGENTA:
+    property: read-only
+
+  # ---------------------------------------------------------------------------
+  # LVGL layout constants (api_colorlcd_lvgl.cpp — fields of lvgl table)
+  # ---------------------------------------------------------------------------
+
+  lvgl.FLOW_ROW:
+    property: read-only
+  lvgl.FLOW_COLUMN:
+    property: read-only
+  lvgl.PAD_TINY:
+    property: read-only
+  lvgl.PAD_SMALL:
+    property: read-only
+  lvgl.PAD_MEDIUM:
+    property: read-only
+  lvgl.PAD_LARGE:
+    property: read-only
+  lvgl.PAD_OUTLINE:
+    property: read-only
+  lvgl.PAD_BORDER:
+    property: read-only
+
+  # LVGL source mask constants
+  lvgl.SRC_ALL:
+    property: read-only
+  lvgl.SRC_INPUT:
+    property: read-only
+  lvgl.SRC_LUA:
+    property: read-only
+  lvgl.SRC_STICK:
+    property: read-only
+  lvgl.SRC_POT:
+    property: read-only
+  lvgl.SRC_OTHER:
+    property: read-only
+  lvgl.SRC_HELI:
+    property: read-only
+  lvgl.SRC_TRIM:
+    property: read-only
+  lvgl.SRC_SWITCH:
+    property: read-only
+  lvgl.SRC_LOGICAL_SWITCH:
+    property: read-only
+  lvgl.SRC_TRAINER:
+    property: read-only
+  lvgl.SRC_CHANNEL:
+    property: read-only
+  lvgl.SRC_GVAR:
+    property: read-only
+  lvgl.SRC_TELEM:
+    property: read-only
+  lvgl.SRC_CLEAR:
+    property: read-only
+  lvgl.SRC_INVERT:
+    property: read-only
+
+  # LVGL switch mask constants
+  lvgl.SW_ALL:
+    property: read-only
+  lvgl.SW_SWITCH:
+    property: read-only
+  lvgl.SW_TRIM:
+    property: read-only
+  lvgl.SW_LOGICAL_SWITCH:
+    property: read-only
+  lvgl.SW_TELEM:
+    property: read-only
+  lvgl.SW_OTHER:
+    property: read-only
+  lvgl.SW_FLIGHT_MODE:
+    property: read-only
+  lvgl.SW_CLEAR:
+    property: read-only
+
+  # LVGL scroll constants
+  lvgl.SCROLL_OFF:
+    property: read-only
+  lvgl.SCROLL_HOR:
+    property: read-only
+  lvgl.SCROLL_VER:
+    property: read-only
+  lvgl.SCROLL_ALL:
+    property: read-only
+
+  # LVGL size constants
+  lvgl.PERCENT_SIZE:
+    property: read-only
+  lvgl.PAGE_BODY_HEIGHT:
+    property: read-only
+  lvgl.UI_ELEMENT_HEIGHT:
+    property: read-only
+  lvgl.LCD_SCALE:
+    property: read-only
+
+  # LVGL widget type constants
+  lvgl.LABEL:
+    property: read-only
+  lvgl.RECTANGLE:
+    property: read-only
+  lvgl.CIRCLE:
+    property: read-only
+  lvgl.ARC:
+    property: read-only
+  lvgl.HLINE:
+    property: read-only
+  lvgl.VLINE:
+    property: read-only
+  lvgl.LINE:
+    property: read-only
+  lvgl.TRIANGLE:
+    property: read-only
+  lvgl.IMAGE:
+    property: read-only
+  lvgl.QRCODE:
+    property: read-only
+  lvgl.BOX:
+    property: read-only
+  lvgl.BUTTON:
+    property: read-only
+  lvgl.MOMENTARY_BUTTON:
+    property: read-only
+  lvgl.TOGGLE:
+    property: read-only
+  lvgl.TEXT_EDIT:
+    property: read-only
+  lvgl.NUMBER_EDIT:
+    property: read-only
+  lvgl.CHOIDE:
+    property: read-only
+  lvgl.CHOICE:
+    property: read-only
+  lvgl.VERTICAL_SLIDER:
+    property: read-only
+  lvgl.PAGE:
+    property: read-only
+  lvgl.FONT:
+    property: read-only
+  lvgl.ALIGN:
+    property: read-only
+  lvgl.COLOR:
+    property: read-only
+  lvgl.TIMER:
+    property: read-only
+  lvgl.SWITCH:
+    property: read-only
+  lvgl.SOURCE:
+    property: read-only
+  lvgl.FILE:
+    property: read-only
+  lvgl.SETTING:
+    property: read-only
+
+  # ---------------------------------------------------------------------------
+  # Drawing pattern constants
+  # ---------------------------------------------------------------------------
+
+  SOLID:
+    property: read-only
+  DOTTED:
+    property: read-only
+  FILL_WHITE:
+    property: read-only
+  GREY_DEFAULT:
+    property: read-only
+  FORCE:
+    property: read-only
+  ERASE:
+    property: read-only
+  ROUND:
+    property: read-only
+
+  # ---------------------------------------------------------------------------
+  # Screen and playback constants
+  # ---------------------------------------------------------------------------
+
+  LCD_W:
+    property: read-only
+  LCD_H:
+    property: read-only
+  PLAY_NOW:
+    property: read-only
+  PLAY_BACKGROUND:
+    property: read-only
+  TIMEHOUR:
+    property: read-only
+  LED_STRIP_LENGTH:
+    property: read-only
+
+  # ---------------------------------------------------------------------------
+  # Unit constants
+  # ---------------------------------------------------------------------------
+
+  UNIT_RAW:
+    property: read-only
+  UNIT_VOLTS:
+    property: read-only
+  UNIT_AMPS:
+    property: read-only
+  UNIT_MILLIAMPS:
+    property: read-only
+  UNIT_KTS:
+    property: read-only
+  UNIT_METERS_PER_SECOND:
+    property: read-only
+  UNIT_FEET_PER_SECOND:
+    property: read-only
+  UNIT_KMH:
+    property: read-only
+  UNIT_MPH:
+    property: read-only
+  UNIT_METERS:
+    property: read-only
+  UNIT_KM:
+    property: read-only
+  UNIT_FEET:
+    property: read-only
+  UNIT_CELSIUS:
+    property: read-only
+  UNIT_FAHRENHEIT:
+    property: read-only
+  UNIT_PERCENT:
+    property: read-only
+  UNIT_MAH:
+    property: read-only
+  UNIT_WATTS:
+    property: read-only
+  UNIT_MILLIWATTS:
+    property: read-only
+  UNIT_DB:
+    property: read-only
+  UNIT_RPMS:
+    property: read-only
+  UNIT_G:
+    property: read-only
+  UNIT_DEGREE:
+    property: read-only
+  UNIT_RADIANS:
+    property: read-only
+  UNIT_MILLILITERS:
+    property: read-only
+  UNIT_FLOZ:
+    property: read-only
+  UNIT_MILLILITERS_PER_MINUTE:
+    property: read-only
+  UNIT_HERTZ:
+    property: read-only
+  UNIT_MS:
+    property: read-only
+  UNIT_US:
+    property: read-only
+  UNIT_DBM:
+    property: read-only
+  UNIT_HOURS:
+    property: read-only
+  UNIT_MINUTES:
+    property: read-only
+  UNIT_SECONDS:
+    property: read-only
+  UNIT_CELLS:
+    property: read-only
+  UNIT_DATETIME:
+    property: read-only
+  UNIT_GPS:
+    property: read-only
+  UNIT_BITFIELD:
+    property: read-only
+  UNIT_TEXT:
+    property: read-only
+
+  # ---------------------------------------------------------------------------
+  # File attribute constants
+  # ---------------------------------------------------------------------------
+
+  AM_RDO:
+    property: read-only
+  AM_HID:
+    property: read-only
+  AM_SYS:
+    property: read-only
+  AM_DIR:
+    property: read-only
+  AM_ARC:
+    property: read-only
+
+  # ---------------------------------------------------------------------------
+  # Touch event constants
+  # ---------------------------------------------------------------------------
+
+  EVT_TOUCH_FIRST:
+    property: read-only
+  EVT_TOUCH_BREAK:
+    property: read-only
+  EVT_TOUCH_SLIDE:
+    property: read-only
+  EVT_TOUCH_TAP:
+    property: read-only
+
+  # ---------------------------------------------------------------------------
+  # Virtual event constants (generated per-radio, all possible values listed)
+  # ---------------------------------------------------------------------------
+
+  EVT_VIRTUAL_PREV:
+    property: read-only
+  EVT_VIRTUAL_PREV_REPT:
+    property: read-only
+  EVT_VIRTUAL_NEXT:
+    property: read-only
+  EVT_VIRTUAL_NEXT_REPT:
+    property: read-only
+  EVT_VIRTUAL_DEC:
+    property: read-only
+  EVT_VIRTUAL_DEC_REPT:
+    property: read-only
+  EVT_VIRTUAL_INC:
+    property: read-only
+  EVT_VIRTUAL_INC_REPT:
+    property: read-only
+  EVT_VIRTUAL_PREV_PAGE:
+    property: read-only
+  EVT_VIRTUAL_NEXT_PAGE:
+    property: read-only
+  EVT_VIRTUAL_MENU:
+    property: read-only
+  EVT_VIRTUAL_MENU_LONG:
+    property: read-only
+  EVT_VIRTUAL_ENTER:
+    property: read-only
+  EVT_VIRTUAL_ENTER_LONG:
+    property: read-only
+  EVT_VIRTUAL_EXIT:
+    property: read-only
+  EVT_EXIT_BREAK:
+    property: read-only
+
+  # Key event constants (generated per-radio, superset of all possible keys)
+  EVT_ENTER_FIRST:
+    property: read-only
+  EVT_ENTER_BREAK:
+    property: read-only
+  EVT_ENTER_LONG:
+    property: read-only
+  EVT_ENTER_REPT:
+    property: read-only
+  EVT_MENU_FIRST:
+    property: read-only
+  EVT_MENU_BREAK:
+    property: read-only
+  EVT_MENU_LONG:
+    property: read-only
+  EVT_MENU_REPT:
+    property: read-only
+  EVT_TELEM_FIRST:
+    property: read-only
+  EVT_TELEM_BREAK:
+    property: read-only
+  EVT_TELEM_LONG:
+    property: read-only
+  EVT_TELEM_REPT:
+    property: read-only
+  EVT_MODEL_FIRST:
+    property: read-only
+  EVT_MODEL_BREAK:
+    property: read-only
+  EVT_MODEL_LONG:
+    property: read-only
+  EVT_MODEL_REPT:
+    property: read-only
+  EVT_SYS_FIRST:
+    property: read-only
+  EVT_SYS_BREAK:
+    property: read-only
+  EVT_SYS_LONG:
+    property: read-only
+  EVT_SYS_REPT:
+    property: read-only
+  EVT_UP_FIRST:
+    property: read-only
+  EVT_UP_BREAK:
+    property: read-only
+  EVT_UP_LONG:
+    property: read-only
+  EVT_UP_REPT:
+    property: read-only
+  EVT_DOWN_FIRST:
+    property: read-only
+  EVT_DOWN_BREAK:
+    property: read-only
+  EVT_DOWN_LONG:
+    property: read-only
+  EVT_DOWN_REPT:
+    property: read-only
+  EVT_LEFT_FIRST:
+    property: read-only
+  EVT_LEFT_BREAK:
+    property: read-only
+  EVT_LEFT_LONG:
+    property: read-only
+  EVT_LEFT_REPT:
+    property: read-only
+  EVT_RIGHT_FIRST:
+    property: read-only
+  EVT_RIGHT_BREAK:
+    property: read-only
+  EVT_RIGHT_LONG:
+    property: read-only
+  EVT_RIGHT_REPT:
+    property: read-only
+  EVT_PAGEUP_FIRST:
+    property: read-only
+  EVT_PAGEUP_BREAK:
+    property: read-only
+  EVT_PAGEUP_LONG:
+    property: read-only
+  EVT_PAGEUP_REPT:
+    property: read-only
+  EVT_PAGEDN_FIRST:
+    property: read-only
+  EVT_PAGEDN_BREAK:
+    property: read-only
+  EVT_PAGEDN_LONG:
+    property: read-only
+  EVT_PAGEDN_REPT:
+    property: read-only
+  EVT_PAGE_FIRST:
+    property: read-only
+  EVT_PAGE_BREAK:
+    property: read-only
+  EVT_PAGE_LONG:
+    property: read-only
+  EVT_PAGE_REPT:
+    property: read-only
+  EVT_PLUS_FIRST:
+    property: read-only
+  EVT_PLUS_BREAK:
+    property: read-only
+  EVT_PLUS_LONG:
+    property: read-only
+  EVT_PLUS_REPT:
+    property: read-only
+  EVT_MINUS_FIRST:
+    property: read-only
+  EVT_MINUS_BREAK:
+    property: read-only
+  EVT_MINUS_LONG:
+    property: read-only
+  EVT_MINUS_REPT:
+    property: read-only
+  EVT_SHIFT_FIRST:
+    property: read-only
+  EVT_SHIFT_BREAK:
+    property: read-only
+  EVT_SHIFT_LONG:
+    property: read-only
+  EVT_SHIFT_REPT:
+    property: read-only
+  EVT_ROT_FIRST:
+    property: read-only
+  EVT_ROT_BREAK:
+    property: read-only
+  EVT_ROT_LONG:
+    property: read-only
+  EVT_ROT_REPT:
+    property: read-only
+  EVT_ROT_LEFT:
+    property: read-only
+  EVT_ROT_RIGHT:
+    property: read-only
+
+  # Rotary encoder speed constants
+  ROTENC_LOWSPEED:
+    property: read-only
+  ROTENC_MIDSPEED:
+    property: read-only
+  ROTENC_HIGHSPEED:
+    property: read-only
+
+  # ---------------------------------------------------------------------------
+  # CHAR_* special character constants (light userdata)
+  # ---------------------------------------------------------------------------
+
+  CHAR_RIGHT:
+    property: read-only
+  CHAR_LEFT:
+    property: read-only
+  CHAR_UP:
+    property: read-only
+  CHAR_DOWN:
+    property: read-only
+  CHAR_DELTA:
+    property: read-only
+  CHAR_STICK:
+    property: read-only
+  CHAR_POT:
+    property: read-only
+  CHAR_SLIDER:
+    property: read-only
+  CHAR_SWITCH:
+    property: read-only
+  CHAR_TRIM:
+    property: read-only
+  CHAR_INPUT:
+    property: read-only
+  CHAR_FUNCTION:
+    property: read-only
+  CHAR_CYC:
+    property: read-only
+  CHAR_TRAINER:
+    property: read-only
+  CHAR_CHANNEL:
+    property: read-only
+  CHAR_TELEMETRY:
+    property: read-only
+  CHAR_LUA:
+    property: read-only
+  CHAR_LS:
+    property: read-only
+  CHAR_CURVE:
+    property: read-only

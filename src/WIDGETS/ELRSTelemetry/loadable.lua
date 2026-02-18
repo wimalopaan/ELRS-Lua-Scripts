@@ -22,9 +22,9 @@ Telemetry = {
   smoothRng = nil,
 
   -- Cell count detection state
-  cellCnt    = nil,
+  cellCnt = nil,
   cellCntCnt = 0,
-  cellLastV  = nil,
+  cellLastV = nil,
 
   -- Diversity detection
   isDiversity = false,
@@ -72,12 +72,12 @@ end
 --- Read all link telemetry values into a table.
 function Telemetry.readLink()
   return {
-    tpwr  = crsf.getSensorValue("TPWR"),
-    rfmd  = crsf.getSensorValue("RFMD"),
+    tpwr = crsf.getSensorValue("TPWR"),
+    rfmd = crsf.getSensorValue("RFMD"),
     rssi1 = crsf.getSensorValue("1RSS"),
     rssi2 = crsf.getSensorValue("2RSS"),
-    rqly  = crsf.getSensorValue("RQly"),
-    ant   = crsf.getSensorValue("ANT"),
+    rqly = crsf.getSensorValue("RQly"),
+    ant = crsf.getSensorValue("ANT"),
   }
 end
 
@@ -85,7 +85,6 @@ end
 function Telemetry.hasModule()
   return crsf.hasCrsfModule()
 end
-
 
 --- Short status text when not operational or warning active.
 --- Returns nil when connected with no warnings.
@@ -128,7 +127,7 @@ end
 --- Get RF mode string from device info.
 function Telemetry.getRfModeStr(rfmd)
   local mod = crsf.deviceInfo
-  return (mod.RFMOD and mod.RFMOD[(rfmd or 0) + 1]) or table.concat({"RFMD", tostring(rfmd or 0)})
+  return (mod.RFMOD and mod.RFMOD[(rfmd or 0) + 1]) or table.concat({ "RFMD", tostring(rfmd or 0) })
 end
 
 --- Update GPS cache from telemetry.
@@ -148,14 +147,20 @@ end
 
 --- Pick the active antenna's RSSI value from a readLink() result.
 function Telemetry.getRssi(tlm)
-  if not tlm then return nil end
+  if not tlm then
+    return nil
+  end
   return (tlm.ant == 1) and tlm.rssi2 or tlm.rssi1
 end
 
 --- Map range percentage to a warning color.
 function Telemetry.rangeColor(pct)
-  if pct > 90 then return RED end
-  if pct > 70 then return ORANGE end
+  if pct > 90 then
+    return RED
+  end
+  if pct > 70 then
+    return ORANGE
+  end
   return COLOR_THEME_SECONDARY1
 end
 
@@ -166,10 +171,10 @@ function Telemetry.signalText()
   end
   local tlm = Telemetry.readLink()
   local pct = Telemetry.getRangePct(tlm)
-  local parts = { table.concat({"Range ", tostring(pct), "%"}) }
+  local parts = { table.concat({ "Range ", tostring(pct), "%" }) }
   local rssi = Telemetry.getRssi(tlm)
   if rssi then
-    parts[#parts + 1] = table.concat({tostring(rssi), "dBm"})
+    parts[#parts + 1] = table.concat({ tostring(rssi), "dBm" })
   end
   return table.concat(parts, " ")
 end
@@ -180,7 +185,7 @@ function Telemetry.rfDetailText()
   local mode = Telemetry.getRfModeStr(tlm.rfmd)
   local parts = { mode }
   if crsf.rxConnected and tlm.tpwr then
-    parts[#parts + 1] = table.concat({tostring(tlm.tpwr), "mW"})
+    parts[#parts + 1] = table.concat({ tostring(tlm.tpwr), "mW" })
   end
   return table.concat(parts, " ")
 end
@@ -253,15 +258,15 @@ end
 local function getScreenId()
   local w, h = LCD_W, LCD_H
   if w >= 800 then
-    return "hd"       -- 800x480
+    return "hd" -- 800x480
   elseif w < h then
     return "portrait" -- 320x480 (EL18)
   elseif w <= 320 then
-    return "small"    -- 320x240
+    return "small" -- 320x240
   elseif h >= 320 then
-    return "sd_tall"  -- 480x320 (TX16S)
+    return "sd_tall" -- 480x320 (TX16S)
   else
-    return "sd"       -- 480x272
+    return "sd" -- 480x272
   end
 end
 
@@ -272,7 +277,7 @@ local function bgOpacity(opts)
 end
 
 local screenId = getScreenId()
-local uiPath = table.concat({"/WIDGETS/ELRSTelemetry/ui/", screenId, ".lua"})
+local uiPath = table.concat({ "/WIDGETS/ELRSTelemetry/ui/", screenId, ".lua" })
 local WidgetUI = loadScript(uiPath)({
   crsf = crsf,
   Telemetry = Telemetry,
@@ -294,10 +299,20 @@ local function createDisplayRow(container, label, valueFn, colorFn)
     flexFlow = lvgl.FLOW_ROW,
     flexPad = 0,
     children = {
-      { type = lvgl.LABEL, text = label, color = COLOR_THEME_PRIMARY1,
-        w = lvgl.PERCENT_SIZE + LABEL_PCT, y = lvgl.PAD_SMALL },
-      { type = lvgl.LABEL, text = valueFn, color = colorFn or COLOR_THEME_SECONDARY1,
-        w = lvgl.PERCENT_SIZE + (100 - LABEL_PCT), y = lvgl.PAD_SMALL },
+      {
+        type = lvgl.LABEL,
+        text = label,
+        color = COLOR_THEME_PRIMARY1,
+        w = lvgl.PERCENT_SIZE + LABEL_PCT,
+        y = lvgl.PAD_SMALL,
+      },
+      {
+        type = lvgl.LABEL,
+        text = valueFn,
+        color = colorFn or COLOR_THEME_SECONDARY1,
+        w = lvgl.PERCENT_SIZE + (100 - LABEL_PCT),
+        y = lvgl.PAD_SMALL,
+      },
     },
   })
 end
@@ -340,7 +355,9 @@ local function buildFullScreen()
       end
       return "Telemetry"
     end,
-    back = function() lvgl.exitFullScreen() end,
+    back = function()
+      lvgl.exitFullScreen()
+    end,
   })
 
   -- No module — show checklist instead of telemetry (matches expresslrs.lua NoModuleDialog)
@@ -354,7 +371,11 @@ local function buildFullScreen()
         { type = lvgl.LABEL, text = "No module found. Check Model Setup:", color = COLOR_THEME_PRIMARY1 },
         { type = lvgl.LABEL, text = "- Internal/External module enabled", color = COLOR_THEME_DISABLED },
         { type = lvgl.LABEL, text = "- Protocol set to CRSF", color = COLOR_THEME_DISABLED },
-        { type = lvgl.LABEL, text = "- Baud rate: 400k (250Hz), 921k (500Hz), 1.87M (F1000)", color = COLOR_THEME_DISABLED },
+        {
+          type = lvgl.LABEL,
+          text = "- Baud rate: 400k (250Hz), 921k (500Hz), 1.87M (F1000)",
+          color = COLOR_THEME_DISABLED,
+        },
       },
     })
     return
@@ -373,187 +394,172 @@ local function buildFullScreen()
       font = BOLD,
       color = RED,
       text = "Model Mismatch — RC commands not sent",
-      visible = function() return crsf.modelMismatch end,
+      visible = function()
+        return crsf.modelMismatch
+      end,
     },
   })
 
   -- Link Status section
   createSectionHeader(fields, "Link Status")
 
-  createDisplayRow(fields, "RF Mode",
-    function()
-      local tlm = Telemetry.readLink()
-      return Telemetry.getRfModeStr(tlm.rfmd)
-    end)
+  createDisplayRow(fields, "RF Mode", function()
+    local tlm = Telemetry.readLink()
+    return Telemetry.getRfModeStr(tlm.rfmd)
+  end)
 
-  createDisplayRow(fields, "Link Quality",
-    function()
-      if not crsf.rxConnected then
-        return "--"
-      end
-      local tlm = Telemetry.readLink()
-      return table.concat({tostring(tlm.rqly or 0), "%"})
-    end)
+  createDisplayRow(fields, "Link Quality", function()
+    if not crsf.rxConnected then
+      return "--"
+    end
+    local tlm = Telemetry.readLink()
+    return table.concat({ tostring(tlm.rqly or 0), "%" })
+  end)
 
-  createDisplayRow(fields, "RSSI 1",
-    function()
-      if not crsf.rxConnected then
-        return "--"
-      end
-      local tlm = Telemetry.readLink()
-      if tlm.rssi1 == nil then
-        return "--"
-      end
-      return table.concat({tostring(tlm.rssi1), " dBm"})
-    end)
+  createDisplayRow(fields, "RSSI 1", function()
+    if not crsf.rxConnected then
+      return "--"
+    end
+    local tlm = Telemetry.readLink()
+    if tlm.rssi1 == nil then
+      return "--"
+    end
+    return table.concat({ tostring(tlm.rssi1), " dBm" })
+  end)
 
-  createDisplayRow(fields, "RSSI 2",
-    function()
-      if not crsf.rxConnected then
-        return "--"
-      end
-      local tlm = Telemetry.readLink()
-      if tlm.rssi2 == nil then
-        return "--"
-      end
-      return table.concat({tostring(tlm.rssi2), " dBm"})
-    end,
-    function()
-      if not Telemetry.isDiversity then
-        return COLOR_THEME_DISABLED
-      end
-      return COLOR_THEME_SECONDARY1
-    end)
+  createDisplayRow(fields, "RSSI 2", function()
+    if not crsf.rxConnected then
+      return "--"
+    end
+    local tlm = Telemetry.readLink()
+    if tlm.rssi2 == nil then
+      return "--"
+    end
+    return table.concat({ tostring(tlm.rssi2), " dBm" })
+  end, function()
+    if not Telemetry.isDiversity then
+      return COLOR_THEME_DISABLED
+    end
+    return COLOR_THEME_SECONDARY1
+  end)
 
-  createDisplayRow(fields, "Active Antenna",
-    function()
-      if not crsf.rxConnected then
-        return "--"
-      end
-      local tlm = Telemetry.readLink()
-      if not Telemetry.isDiversity then
-        return "N/A"
-      end
-      return (tlm.ant == 1) and "2" or "1"
-    end)
+  createDisplayRow(fields, "Active Antenna", function()
+    if not crsf.rxConnected then
+      return "--"
+    end
+    local tlm = Telemetry.readLink()
+    if not Telemetry.isDiversity then
+      return "N/A"
+    end
+    return (tlm.ant == 1) and "2" or "1"
+  end)
 
-  createDisplayRow(fields, "Range",
-    function()
-      if not crsf.rxConnected then
-        return "--"
-      end
-      local tlm = Telemetry.readLink()
-      local pct = Telemetry.getRangePct(tlm)
-      return table.concat({tostring(pct), "%"})
-    end)
+  createDisplayRow(fields, "Range", function()
+    if not crsf.rxConnected then
+      return "--"
+    end
+    local tlm = Telemetry.readLink()
+    local pct = Telemetry.getRangePct(tlm)
+    return table.concat({ tostring(pct), "%" })
+  end)
 
   -- Power section
   createSectionHeader(fields, "Power")
 
-  createDisplayRow(fields, "TX Power",
-    function()
-      if not crsf.rxConnected then
-        return "--"
-      end
-      local tlm = Telemetry.readLink()
-      if tlm.tpwr == nil then
-        return "--"
-      end
-      return table.concat({tostring(tlm.tpwr), " mW"})
-    end)
+  createDisplayRow(fields, "TX Power", function()
+    if not crsf.rxConnected then
+      return "--"
+    end
+    local tlm = Telemetry.readLink()
+    if tlm.tpwr == nil then
+      return "--"
+    end
+    return table.concat({ tostring(tlm.tpwr), " mW" })
+  end)
 
-  createDisplayRow(fields, "Power Index",
-    function()
-      if not crsf.rxConnected then
-        return "--"
-      end
-      local tlm = Telemetry.readLink()
-      if tlm.tpwr == nil then
-        return "--"
-      end
-      return tostring(Telemetry.pwrToIdx(tlm.tpwr))
-    end)
+  createDisplayRow(fields, "Power Index", function()
+    if not crsf.rxConnected then
+      return "--"
+    end
+    local tlm = Telemetry.readLink()
+    if tlm.tpwr == nil then
+      return "--"
+    end
+    return tostring(Telemetry.pwrToIdx(tlm.tpwr))
+  end)
 
   -- Flight Controller section
   createSectionHeader(fields, "Flight Controller")
 
-  createDisplayRow(fields, "Battery",
-    function()
-      local vbat = crsf.getSensorValue("RxBt")
-      if vbat == nil or vbat <= 0 then
-        return "--"
-      end
-      Telemetry.checkCellCount(vbat)
-      local cells = Telemetry.cellCnt
-      if cells then
-        return string.format("%dS %.2fV (%.2fV)", cells, vbat / cells, vbat)
-      end
-      return string.format("%.2fV", vbat)
-    end)
+  createDisplayRow(fields, "Battery", function()
+    local vbat = crsf.getSensorValue("RxBt")
+    if vbat == nil or vbat <= 0 then
+      return "--"
+    end
+    Telemetry.checkCellCount(vbat)
+    local cells = Telemetry.cellCnt
+    if cells then
+      return string.format("%dS %.2fV (%.2fV)", cells, vbat / cells, vbat)
+    end
+    return string.format("%.2fV", vbat)
+  end)
 
-  createDisplayRow(fields, "Current",
-    function()
-      local curr = crsf.getSensorValue("Curr")
-      if curr == nil or curr <= 0 then
-        return "--"
-      end
-      return string.format("%.2f A", curr)
-    end)
+  createDisplayRow(fields, "Current", function()
+    local curr = crsf.getSensorValue("Curr")
+    if curr == nil or curr <= 0 then
+      return "--"
+    end
+    return string.format("%.2f A", curr)
+  end)
 
-  createDisplayRow(fields, "Flight Mode",
-    function()
-      local fm = crsf.getSensorValue("FM")
-      if fm == nil or fm == 0 then
-        return "--"
-      end
-      return tostring(fm)
-    end)
+  createDisplayRow(fields, "Flight Mode", function()
+    local fm = crsf.getSensorValue("FM")
+    if fm == nil or fm == 0 then
+      return "--"
+    end
+    return tostring(fm)
+  end)
 
   -- GPS section
   createSectionHeader(fields, "GPS")
 
-  createDisplayRow(fields, "Satellites",
-    function()
-      local sats = crsf.getSensorValue("Sats")
-      if sats == nil then
-        return "--"
-      end
-      return tostring(sats)
-    end)
+  createDisplayRow(fields, "Satellites", function()
+    local sats = crsf.getSensorValue("Sats")
+    if sats == nil then
+      return "--"
+    end
+    return tostring(sats)
+  end)
 
-  createDisplayRow(fields, "Speed",
-    function()
-      local gspd = crsf.getSensorValue("GSpd")
-      if gspd == nil then
-        return "--"
-      end
-      return string.format("%.1f", gspd)
-    end)
+  createDisplayRow(fields, "Speed", function()
+    local gspd = crsf.getSensorValue("GSpd")
+    if gspd == nil then
+      return "--"
+    end
+    return string.format("%.1f", gspd)
+  end)
 
-  createDisplayRow(fields, "Altitude",
-    function()
-      local alt = crsf.getSensorValue("Alt")
-      if alt == nil then
-        return "--"
-      end
-      return tostring(alt)
-    end)
+  createDisplayRow(fields, "Altitude", function()
+    local alt = crsf.getSensorValue("Alt")
+    if alt == nil then
+      return "--"
+    end
+    return tostring(alt)
+  end)
 
-  createDisplayRow(fields, "Latitude",
-    function()
-      if Telemetry.gps == nil then
-        return "--"
-      end
-      return tostring(Telemetry.gps.lat)
-    end)
+  createDisplayRow(fields, "Latitude", function()
+    if Telemetry.gps == nil then
+      return "--"
+    end
+    return tostring(Telemetry.gps.lat)
+  end)
 
-  createDisplayRow(fields, "Longitude",
-    function()
-      if Telemetry.gps == nil then
-        return "--"
-      end
-      return tostring(Telemetry.gps.lon)
-    end)
+  createDisplayRow(fields, "Longitude", function()
+    if Telemetry.gps == nil then
+      return "--"
+    end
+    return tostring(Telemetry.gps.lon)
+  end)
 end
 
 -- ============================================================================

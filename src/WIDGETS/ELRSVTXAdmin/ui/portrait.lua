@@ -16,19 +16,19 @@ local WidgetUI = {}
 -- Portrait widget zones tend to be wider-relative-to-height than landscape.
 -- Height tiers are scaled for the taller 480px screen.
 WidgetUI.breakpoints = {
-  topBarW  = 80,
-  sixthH   = 70,
+  topBarW = 80,
+  sixthH = 70,
   quarterH = 100,
-  thirdH   = 140,
-  halfH    = 210,
+  thirdH = 140,
+  halfH = 210,
 }
 
 WidgetUI.fonts = {
-  sixth   = { status = BOLD },
+  sixth = { status = BOLD },
   quarter = { status = BOLD },
-  third   = { status = BOLD },
-  half    = { hero = MIDSIZE, detail = SMLSIZE },
-  full    = { hero = MIDSIZE, detail = SMLSIZE },
+  third = { status = BOLD },
+  half = { hero = MIDSIZE, detail = SMLSIZE },
+  full = { hero = MIDSIZE, detail = SMLSIZE },
 }
 
 local function pitModeColor()
@@ -51,11 +51,15 @@ end
 
 --- Shorter detail line for narrow portrait screen.
 local function detailLine()
-  if not Protocol.isActive() then return "" end
-  if VTX.state.band == 0 then return "" end
-  local pwr = VTX.state.power > 0 and table.concat({"P", VTX.state.power}) or "P-"
+  if not Protocol.isActive() then
+    return ""
+  end
+  if VTX.state.band == 0 then
+    return ""
+  end
+  local pwr = VTX.state.power > 0 and table.concat({ "P", VTX.state.power }) or "P-"
   local pit = VTX.state.pitmode and " Pit" or ""
-  return table.concat({pwr, pit})
+  return table.concat({ pwr, pit })
 end
 
 --- Build two narrow cheatsheet rows (3 labels each), or nil pair.
@@ -74,25 +78,23 @@ local function buildCheatsheetNarrow()
   local hasModule = function()
     return Protocol.state ~= Protocol.STATE_NO_MODULE
   end
-  return
-    {
-      type = lvgl.BOX,
-      align = LEFT,
-      flexFlow = lvgl.FLOW_ROW,
-      flexPad = lvgl.PAD_TINY,
-      borderPad = 0,
-      visible = hasModule,
-      children = row1,
-    },
-    {
-      type = lvgl.BOX,
-      align = LEFT,
-      flexFlow = lvgl.FLOW_ROW,
-      flexPad = lvgl.PAD_TINY,
-      borderPad = 0,
-      visible = hasModule,
-      children = row2,
-    }
+  return {
+    type = lvgl.BOX,
+    align = LEFT,
+    flexFlow = lvgl.FLOW_ROW,
+    flexPad = lvgl.PAD_TINY,
+    borderPad = 0,
+    visible = hasModule,
+    children = row1,
+  }, {
+    type = lvgl.BOX,
+    align = LEFT,
+    flexFlow = lvgl.FLOW_ROW,
+    flexPad = lvgl.PAD_TINY,
+    borderPad = 0,
+    visible = hasModule,
+    children = row2,
+  }
 end
 
 -- ============================================================================
@@ -100,7 +102,8 @@ end
 -- ============================================================================
 
 local TopBarUI = loadScript("/WIDGETS/ELRSVTXAdmin/ui/topbar.lua")({
-  Protocol = Protocol, VTX = VTX,
+  Protocol = Protocol,
+  VTX = VTX,
 })
 
 --- 1/6: single row with band/channel + compact detail.
@@ -312,9 +315,9 @@ function WidgetUI.buildHalf(w, h, opa)
         if VTX.state.band == 0 then
           return "VTX Disabled"
         end
-        local pwr = VTX.state.power > 0 and table.concat({"Power ", VTX.state.power}) or "Power -"
+        local pwr = VTX.state.power > 0 and table.concat({ "Power ", VTX.state.power }) or "Power -"
         local pit = VTX.state.pitmode and "  Pit" or ""
-        return table.concat({pwr, pit})
+        return table.concat({ pwr, pit })
       end,
     },
   }
@@ -389,12 +392,18 @@ function WidgetUI.build(wgtZone, opts)
   local w, h = wgtZone.w, wgtZone.h
   local opa = bgOpacity(opts)
   local bp = WidgetUI.breakpoints
-  if     w < bp.topBarW  then TopBarUI.build(w, h)
-  elseif h < bp.sixthH   then WidgetUI.buildSixth(w, h, opa)
-  elseif h < bp.quarterH then WidgetUI.buildQuarter(w, h, opa)
-  elseif h < bp.thirdH   then WidgetUI.buildThird(w, h, opa)
-  elseif h < bp.halfH    then WidgetUI.buildHalf(w, h, opa)
-  else                         WidgetUI.buildFull(w, h, opa)
+  if w < bp.topBarW then
+    TopBarUI.build(w, h)
+  elseif h < bp.sixthH then
+    WidgetUI.buildSixth(w, h, opa)
+  elseif h < bp.quarterH then
+    WidgetUI.buildQuarter(w, h, opa)
+  elseif h < bp.thirdH then
+    WidgetUI.buildThird(w, h, opa)
+  elseif h < bp.halfH then
+    WidgetUI.buildHalf(w, h, opa)
+  else
+    WidgetUI.buildFull(w, h, opa)
   end
 end
 

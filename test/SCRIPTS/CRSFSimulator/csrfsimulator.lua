@@ -41,43 +41,43 @@ local config = {
 
 local CRSF = {
   -- Frame types
-  FRAMETYPE_DEVICE_PING              = 0x28,
-  FRAMETYPE_DEVICE_INFO              = 0x29,
+  FRAMETYPE_DEVICE_PING = 0x28,
+  FRAMETYPE_DEVICE_INFO = 0x29,
   FRAMETYPE_PARAMETER_SETTINGS_ENTRY = 0x2B,
-  FRAMETYPE_PARAMETER_READ           = 0x2C,
-  FRAMETYPE_PARAMETER_WRITE          = 0x2D,
-  FRAMETYPE_ELRS_STATUS              = 0x2E,
+  FRAMETYPE_PARAMETER_READ = 0x2C,
+  FRAMETYPE_PARAMETER_WRITE = 0x2D,
+  FRAMETYPE_ELRS_STATUS = 0x2E,
 
   -- Addresses
-  ADDRESS_BROADCAST          = 0x00,
-  ADDRESS_RADIO_TRANSMITTER  = 0xEA,
-  ADDRESS_CRSF_RECEIVER      = 0xEC,
-  ADDRESS_CRSF_TRANSMITTER   = 0xEE,
-  ADDRESS_ELRS_LUA           = 0xEF,
+  ADDRESS_BROADCAST = 0x00,
+  ADDRESS_RADIO_TRANSMITTER = 0xEA,
+  ADDRESS_CRSF_RECEIVER = 0xEC,
+  ADDRESS_CRSF_TRANSMITTER = 0xEE,
+  ADDRESS_ELRS_LUA = 0xEF,
 
   -- Field types0
-  UINT8          = 0,
-  INT8           = 1,
-  UINT16         = 2,
-  INT16          = 3,
-  FLOAT          = 8,
-  TEXT_SELECTION  = 9,
-  STRING         = 10,
-  FOLDER         = 11,
-  INFO           = 12,
-  COMMAND        = 13,
+  UINT8 = 0,
+  INT8 = 1,
+  UINT16 = 2,
+  INT16 = 3,
+  FLOAT = 8,
+  TEXT_SELECTION = 9,
+  STRING = 10,
+  FOLDER = 11,
+  INFO = 12,
+  COMMAND = 13,
 
   -- ELRS identification
   ELRS_SERIAL_ID = 0x454C5253,
 
   -- Command steps
-  CMD_IDLE       = 0,
-  CMD_CLICK      = 1,
-  CMD_EXECUTING  = 2,
+  CMD_IDLE = 0,
+  CMD_CLICK = 1,
+  CMD_EXECUTING = 2,
   CMD_ASKCONFIRM = 3,
-  CMD_CONFIRMED  = 4,
-  CMD_CANCEL     = 5,
-  CMD_QUERY      = 6,
+  CMD_CONFIRMED = 4,
+  CMD_CANCEL = 5,
+  CMD_QUERY = 6,
 }
 
 -- ============================================================================
@@ -88,10 +88,10 @@ local CRSF = {
 -- ============================================================================
 
 local rateConfigs = {
-  [0] = { hz = 50,  interval = 20000, defaultTlm = 5 },  -- TLM_RATIO_1_16
-  [1] = { hz = 150, interval = 6666,  defaultTlm = 4 },  -- TLM_RATIO_1_32
-  [2] = { hz = 250, interval = 4000,  defaultTlm = 3 },  -- TLM_RATIO_1_64
-  [3] = { hz = 500, interval = 2000,  defaultTlm = 2 },  -- TLM_RATIO_1_128
+  [0] = { hz = 50, interval = 20000, defaultTlm = 5 }, -- TLM_RATIO_1_16
+  [1] = { hz = 150, interval = 6666, defaultTlm = 4 }, -- TLM_RATIO_1_32
+  [2] = { hz = 250, interval = 4000, defaultTlm = 3 }, -- TLM_RATIO_1_64
+  [3] = { hz = 500, interval = 2000, defaultTlm = 2 }, -- TLM_RATIO_1_128
 }
 
 -- ============================================================================
@@ -134,7 +134,7 @@ end
 -- Slow loading scenario: time-delayed response queue.
 -- PARAMETER_READ responses are held here until their delivery time, then
 -- promoted to the main queue so the Lua script sees realistic latency.
-local SLOW_LOADING_DELAY_TICKS = 200  -- 2 seconds per field (getTime() at 10ms/tick)
+local SLOW_LOADING_DELAY_TICKS = 200 -- 2 seconds per field (getTime() at 10ms/tick)
 local delayedResponseQueue = {}
 
 -- Deferred folder name updates simulate the firmware event loop gap:
@@ -143,7 +143,7 @@ local delayedResponseQueue = {}
 -- A PARAMETER_READ arriving before that gets stale dynName.
 -- Delay is time-based (getTime() ticks, 10ms each) to be independent of
 -- how often mockPop is called within a single Protocol.poll() cycle.
-local FOLDER_NAMES_UPDATE_TICKS = 2  -- 20ms delay
+local FOLDER_NAMES_UPDATE_TICKS = 2 -- 20ms delay
 local folderNamesReadyAt = 0
 local folderNamesDevice = nil
 
@@ -190,7 +190,7 @@ local function appendString(tbl, str)
   for i = 1, #str do
     tbl[#tbl + 1] = string.byte(str, i)
   end
-  tbl[#tbl + 1] = 0  -- null terminator
+  tbl[#tbl + 1] = 0 -- null terminator
 end
 
 local function appendU32BE(tbl, val)
@@ -224,7 +224,7 @@ local function encodeDeviceInfo(device, destAddr)
   -- Hardware version (4 bytes BE)
   appendU32BE(data, device.hwVer or 0)
   -- Software version (4 bytes BE)
-  appendU32BE(data, device.swVer or 0x00030500)  -- 3.5.0
+  appendU32BE(data, device.swVer or 0x00030500) -- 3.5.0
   -- Field count
   data[#data + 1] = device.fieldCount
   -- Parameter version
@@ -243,10 +243,10 @@ local function encodeParameterEntry(device, param, _chunk, destAddr)
   local data = {}
   data[1] = destAddr or CRSF.ADDRESS_RADIO_TRANSMITTER
   data[2] = device.id
-  data[3] = param.id         -- Field ID
-  data[4] = 0                -- Chunks remaining (0 = single chunk)
-  data[5] = param.parent or 0  -- Parent ID (0 = root)
-  data[6] = param.type       -- Type byte (with hidden flag if needed)
+  data[3] = param.id -- Field ID
+  data[4] = 0 -- Chunks remaining (0 = single chunk)
+  data[5] = param.parent or 0 -- Parent ID (0 = root)
+  data[6] = param.type -- Type byte (with hidden flag if needed)
   if param.hidden then
     data[6] = bit32.bor(data[6], 0x80)
   end
@@ -267,7 +267,7 @@ local function encodeParameterEntry(device, param, _chunk, destAddr)
     -- Max (count of options - 1)
     local optCount = 1
     for i = 1, #param.options do
-      if string.byte(param.options, i) == 59 then  -- ';'
+      if string.byte(param.options, i) == 59 then -- ';'
         optCount = optCount + 1
       end
     end
@@ -276,7 +276,6 @@ local function encodeParameterEntry(device, param, _chunk, destAddr)
     data[#data + 1] = 0
     -- Units (null-terminated)
     appendString(data, param.units or "")
-
   elseif t == CRSF.COMMAND then
     -- Status
     data[#data + 1] = param.status or CRSF.CMD_IDLE
@@ -284,25 +283,21 @@ local function encodeParameterEntry(device, param, _chunk, destAddr)
     data[#data + 1] = param.timeout or 200
     -- Info string (null-terminated)
     appendString(data, param.info or "")
-
   elseif t == CRSF.FOLDER then
     -- Folder contains a list of child parameter IDs terminated by 0xFF.
     -- This allows the Lua script to know which fields to load for this folder.
     -- We need the device context to scan for children.
     if param._device then
       for _, p in ipairs(param._device.params) do
-        if (param.id == 0 and (p.parent == 0 or p.parent == nil)) or
-           (param.id ~= 0 and p.parent == param.id) then
+        if (param.id == 0 and (p.parent == 0 or p.parent == nil)) or (param.id ~= 0 and p.parent == param.id) then
           data[#data + 1] = p.id
         end
       end
     end
-    data[#data + 1] = 0xFF  -- terminator
-
+    data[#data + 1] = 0xFF -- terminator
   elseif t == CRSF.INFO or t == CRSF.STRING then
     -- INFO (read-only) and STRING (editable) both encode as null-terminated string
     appendString(data, param.value or "")
-
   elseif t == CRSF.UINT8 then
     -- value, min, max (1 byte each)
     data[#data + 1] = param.value or 0
@@ -312,7 +307,6 @@ local function encodeParameterEntry(device, param, _chunk, destAddr)
     data[#data + 1] = param.default or 0
     -- units
     appendString(data, param.units or "")
-
   elseif t == CRSF.INT8 then
     -- Same as UINT8 but values may be signed (stored as unsigned in wire format)
     local v = param.value or 0
@@ -332,7 +326,6 @@ local function encodeParameterEntry(device, param, _chunk, destAddr)
     data[#data + 1] = mx
     data[#data + 1] = param.default or 0
     appendString(data, param.units or "")
-
   elseif t == CRSF.UINT16 or t == CRSF.INT16 then
     -- value, min, max (2 bytes BE each)
     appendU16BE(data, param.value or 0)
@@ -341,7 +334,6 @@ local function encodeParameterEntry(device, param, _chunk, destAddr)
     -- default (2 bytes)
     appendU16BE(data, param.default or 0)
     appendString(data, param.units or "")
-
   elseif t == CRSF.FLOAT then
     -- value, min, max, default (4 bytes BE each), precision (1 byte), step (4 bytes BE)
     appendU32BE(data, param.value or 0)
@@ -387,60 +379,156 @@ local txDevice = {
   name = "TX16S MK3",
   serialNo = CRSF.ELRS_SERIAL_ID,
   hwVer = 0,
-  swVer = 0x00030500,  -- 3.5.0
-  fieldCount = 21,  -- total parameter count
+  swVer = 0x00030500, -- 3.5.0
+  fieldCount = 21, -- total parameter count
   params = {
-    { id = 1,  parent = 0, type = CRSF.TEXT_SELECTION, name = "Packet Rate",
-      options = "50(-117dBm);150(-112dBm);250(-108dBm);500(-105dBm)", value = 2, units = "Hz" },
-    { id = 2,  parent = 0, type = CRSF.TEXT_SELECTION, name = "Telem Ratio",
-      options = "Std;Off;1:128;1:64;1:32;1:16;1:8;1:4;1:2;Race", value = 0, units = " (1:64)" },
-    { id = 3,  parent = 0, type = CRSF.TEXT_SELECTION, name = "Switch Mode",
-      options = "Hybrid;Wide", value = 1, units = "" },
-    { id = 4,  parent = 0, type = CRSF.TEXT_SELECTION, name = "Model Match",
-      options = "Off;On", value = 0, units = "(ID: 1)" },
-    { id = 5,  parent = 0, type = CRSF.TEXT_SELECTION, name = "Antenna Mode",
-      options = "Gemini;Ant 1;Ant 2;Switch", value = 0, units = "" },
+    {
+      id = 1,
+      parent = 0,
+      type = CRSF.TEXT_SELECTION,
+      name = "Packet Rate",
+      options = "50(-117dBm);150(-112dBm);250(-108dBm);500(-105dBm)",
+      value = 2,
+      units = "Hz",
+    },
+    {
+      id = 2,
+      parent = 0,
+      type = CRSF.TEXT_SELECTION,
+      name = "Telem Ratio",
+      options = "Std;Off;1:128;1:64;1:32;1:16;1:8;1:4;1:2;Race",
+      value = 0,
+      units = " (1:64)",
+    },
+    {
+      id = 3,
+      parent = 0,
+      type = CRSF.TEXT_SELECTION,
+      name = "Switch Mode",
+      options = "Hybrid;Wide",
+      value = 1,
+      units = "",
+    },
+    {
+      id = 4,
+      parent = 0,
+      type = CRSF.TEXT_SELECTION,
+      name = "Model Match",
+      options = "Off;On",
+      value = 0,
+      units = "(ID: 1)",
+    },
+    {
+      id = 5,
+      parent = 0,
+      type = CRSF.TEXT_SELECTION,
+      name = "Antenna Mode",
+      options = "Gemini;Ant 1;Ant 2;Switch",
+      value = 0,
+      units = "",
+    },
 
     -- TX Power folder
-    { id = 6,  parent = 0, type = CRSF.FOLDER, name = "TX Power" },
-    { id = 7,  parent = 6, type = CRSF.TEXT_SELECTION, name = "Max Power",
-      options = "10/10;25/25;25/50;25/100;25/250;25/500;25/1000;25/2000", value = 3, units = "mW" },
-    { id = 8,  parent = 6, type = CRSF.TEXT_SELECTION, name = "Dynamic",
-      options = "Off;Dyn;AUX9;AUX10;AUX11;AUX12", value = 1, units = "" },
-    { id = 9,  parent = 6, type = CRSF.TEXT_SELECTION, name = "Fan Thresh",
-      options = "10mW;25mW;50mW;100mW;250mW;500mW;1000mW;2000mW;Never", value = 3, units = "" },
+    { id = 6, parent = 0, type = CRSF.FOLDER, name = "TX Power" },
+    {
+      id = 7,
+      parent = 6,
+      type = CRSF.TEXT_SELECTION,
+      name = "Max Power",
+      options = "10/10;25/25;25/50;25/100;25/250;25/500;25/1000;25/2000",
+      value = 3,
+      units = "mW",
+    },
+    {
+      id = 8,
+      parent = 6,
+      type = CRSF.TEXT_SELECTION,
+      name = "Dynamic",
+      options = "Off;Dyn;AUX9;AUX10;AUX11;AUX12",
+      value = 1,
+      units = "",
+    },
+    {
+      id = 9,
+      parent = 6,
+      type = CRSF.TEXT_SELECTION,
+      name = "Fan Thresh",
+      options = "10mW;25mW;50mW;100mW;250mW;500mW;1000mW;2000mW;Never",
+      value = 3,
+      units = "",
+    },
 
     -- VTX Administrator folder
     { id = 10, parent = 0, type = CRSF.FOLDER, name = "VTX Administrator" },
-    { id = 11, parent = 10, type = CRSF.TEXT_SELECTION, name = "Band",
-      options = "Off;A;B;E;F;R;L", value = 5, units = "" },
-    { id = 12, parent = 10, type = CRSF.UINT8, name = "Channel",
-      value = 1, min = 1, max = 8, units = "" },
-    { id = 13, parent = 10, type = CRSF.TEXT_SELECTION, name = "Pwr Lvl",
-      options = "-;1;2;3;4;5;6;7;8", value = 0, units = "" },
-    { id = 14, parent = 10, type = CRSF.TEXT_SELECTION, name = "Pitmode",
-      options = "Off;On", value = 0, units = "" },
-    { id = 15, parent = 10, type = CRSF.COMMAND, name = "Send VTx",
-      status = CRSF.CMD_IDLE, timeout = 50, info = "" },
+    {
+      id = 11,
+      parent = 10,
+      type = CRSF.TEXT_SELECTION,
+      name = "Band",
+      options = "Off;A;B;E;F;R;L",
+      value = 5,
+      units = "",
+    },
+    { id = 12, parent = 10, type = CRSF.UINT8, name = "Channel", value = 1, min = 1, max = 8, units = "" },
+    {
+      id = 13,
+      parent = 10,
+      type = CRSF.TEXT_SELECTION,
+      name = "Pwr Lvl",
+      options = "-;1;2;3;4;5;6;7;8",
+      value = 0,
+      units = "",
+    },
+    {
+      id = 14,
+      parent = 10,
+      type = CRSF.TEXT_SELECTION,
+      name = "Pitmode",
+      options = "Off;On",
+      value = 0,
+      units = "",
+    },
+    {
+      id = 15,
+      parent = 10,
+      type = CRSF.COMMAND,
+      name = "Send VTx",
+      status = CRSF.CMD_IDLE,
+      timeout = 50,
+      info = "",
+    },
 
     -- WiFi Connectivity folder
     { id = 16, parent = 0, type = CRSF.FOLDER, name = "WiFi Connectivity" },
-    { id = 17, parent = 16, type = CRSF.COMMAND, name = "Enable WiFi",
-      status = CRSF.CMD_IDLE, timeout = 50, info = "", persistent = true },  -- runs until cancelled
-    { id = 18, parent = 16, type = CRSF.COMMAND, name = "Enable Rx WiFi",
-      status = CRSF.CMD_IDLE, timeout = 50, info = "", persistent = true },  -- runs until cancelled
+    {
+      id = 17,
+      parent = 16,
+      type = CRSF.COMMAND,
+      name = "Enable WiFi",
+      status = CRSF.CMD_IDLE,
+      timeout = 50,
+      info = "",
+      persistent = true,
+    }, -- runs until cancelled
+    {
+      id = 18,
+      parent = 16,
+      type = CRSF.COMMAND,
+      name = "Enable Rx WiFi",
+      status = CRSF.CMD_IDLE,
+      timeout = 50,
+      info = "",
+      persistent = true,
+    }, -- runs until cancelled
 
     -- Root-level commands and info
-    { id = 19, parent = 0, type = CRSF.COMMAND, name = "Bind",
-      status = CRSF.CMD_IDLE, timeout = 50, info = "" },
+    { id = 19, parent = 0, type = CRSF.COMMAND, name = "Bind", status = CRSF.CMD_IDLE, timeout = 50, info = "" },
 
     -- Bad/Good (hidden from ELRS Lua, visible to other UIs)
-    { id = 20, parent = 0, type = CRSF.INFO, name = "Bad/Good",
-      value = "0/250", hidden = true },
+    { id = 20, parent = 0, type = CRSF.INFO, name = "Bad/Good", value = "0/250", hidden = true },
 
     -- Version + regulatory domain (name = version+domain, value = commit hash)
-    { id = 21, parent = 0, type = CRSF.INFO, name = "3.5.0 ISM2G4",
-      value = "825ed8" },
+    { id = 21, parent = 0, type = CRSF.INFO, name = "3.5.0 ISM2G4", value = "825ed8" },
   },
 }
 
@@ -454,66 +542,141 @@ local rxDevice = {
   name = "ELRS 2400RX",
   serialNo = CRSF.ELRS_SERIAL_ID,
   hwVer = 0,
-  swVer = 0x00030500,  -- 3.5.0
-  fieldCount = 22,  -- total parameter count
+  swVer = 0x00030500, -- 3.5.0
+  fieldCount = 22, -- total parameter count
   params = {
-    { id = 1,  parent = 0, type = CRSF.TEXT_SELECTION, name = "Protocol",
+    {
+      id = 1,
+      parent = 0,
+      type = CRSF.TEXT_SELECTION,
+      name = "Protocol",
       options = "CRSF;Inverted CRSF;SBUS;Inverted SBUS;SUMD;DJI RS Pro;HoTT Telemetry;MAVLink;DisplayPort;GPS",
-      value = 0, units = "" },
-    { id = 2,  parent = 0, type = CRSF.TEXT_SELECTION, name = "SBUS failsafe",
-      options = "No Pulses;Last Pos", value = 0, units = "" },
-    { id = 3,  parent = 0, type = CRSF.TEXT_SELECTION, name = "Ant. Mode",
-      options = "Antenna A;Antenna B;Diversity", value = 2, units = "" },
-    { id = 4,  parent = 0, type = CRSF.TEXT_SELECTION, name = "Tlm Power",
-      options = "10;25;50;100;250;MatchTX", value = 2, units = "mW" },
+      value = 0,
+      units = "",
+    },
+    {
+      id = 2,
+      parent = 0,
+      type = CRSF.TEXT_SELECTION,
+      name = "SBUS failsafe",
+      options = "No Pulses;Last Pos",
+      value = 0,
+      units = "",
+    },
+    {
+      id = 3,
+      parent = 0,
+      type = CRSF.TEXT_SELECTION,
+      name = "Ant. Mode",
+      options = "Antenna A;Antenna B;Diversity",
+      value = 2,
+      units = "",
+    },
+    {
+      id = 4,
+      parent = 0,
+      type = CRSF.TEXT_SELECTION,
+      name = "Tlm Power",
+      options = "10;25;50;100;250;MatchTX",
+      value = 2,
+      units = "mW",
+    },
 
     -- Team Race folder
-    { id = 5,  parent = 0, type = CRSF.FOLDER, name = "Team Race" },
-    { id = 6,  parent = 5, type = CRSF.TEXT_SELECTION, name = "Channel",
+    { id = 5, parent = 0, type = CRSF.FOLDER, name = "Team Race" },
+    {
+      id = 6,
+      parent = 5,
+      type = CRSF.TEXT_SELECTION,
+      name = "Channel",
       options = "AUX2;AUX3;AUX4;AUX5;AUX6;AUX7;AUX8;AUX9;AUX10;AUX11;AUX12",
-      value = 0, units = "" },
-    { id = 7,  parent = 5, type = CRSF.TEXT_SELECTION, name = "Position",
-      options = "Disabled;1/Low;2;3;Mid;4;5;6/High", value = 0, units = "" },
+      value = 0,
+      units = "",
+    },
+    {
+      id = 7,
+      parent = 5,
+      type = CRSF.TEXT_SELECTION,
+      name = "Position",
+      options = "Disabled;1/Low;2;3;Mid;4;5;6/High",
+      value = 0,
+      units = "",
+    },
 
     -- Output Mapping folder
-    { id = 8,  parent = 0, type = CRSF.FOLDER, name = "Output Mapping" },
-    { id = 9,  parent = 8, type = CRSF.UINT8, name = "Output Ch",
-      value = 1, min = 1, max = 4, units = "" },
-    { id = 10, parent = 8, type = CRSF.UINT8, name = "Input Ch",
-      value = 1, min = 1, max = 16, units = "" },
-    { id = 11, parent = 8, type = CRSF.TEXT_SELECTION, name = "Output Mode",
+    { id = 8, parent = 0, type = CRSF.FOLDER, name = "Output Mapping" },
+    { id = 9, parent = 8, type = CRSF.UINT8, name = "Output Ch", value = 1, min = 1, max = 4, units = "" },
+    { id = 10, parent = 8, type = CRSF.UINT8, name = "Input Ch", value = 1, min = 1, max = 16, units = "" },
+    {
+      id = 11,
+      parent = 8,
+      type = CRSF.TEXT_SELECTION,
+      name = "Output Mode",
       options = "50Hz;60Hz;100Hz;160Hz;333Hz;400Hz;10kHzDuty;On/Off;DShot",
-      value = 0, units = "" },
-    { id = 12, parent = 8, type = CRSF.TEXT_SELECTION, name = "Invert",
-      options = "Off;On", value = 0, units = "" },
+      value = 0,
+      units = "",
+    },
+    {
+      id = 12,
+      parent = 8,
+      type = CRSF.TEXT_SELECTION,
+      name = "Invert",
+      options = "Off;On",
+      value = 0,
+      units = "",
+    },
 
     -- PWM Channel 1 subfolder (nested inside Output Mapping)
     { id = 13, parent = 8, type = CRSF.FOLDER, name = "PWM Ch1" },
-    { id = 14, parent = 13, type = CRSF.UINT8, name = "Failsafe",
-      value = 0, min = 0, max = 100, units = "%" },
-    { id = 15, parent = 13, type = CRSF.TEXT_SELECTION, name = "Mode",
-      options = "50Hz;60Hz;100Hz;160Hz;333Hz;400Hz", value = 0, units = "" },
+    { id = 14, parent = 13, type = CRSF.UINT8, name = "Failsafe", value = 0, min = 0, max = 100, units = "%" },
+    {
+      id = 15,
+      parent = 13,
+      type = CRSF.TEXT_SELECTION,
+      name = "Mode",
+      options = "50Hz;60Hz;100Hz;160Hz;333Hz;400Hz",
+      value = 0,
+      units = "",
+    },
 
     -- PWM Channel 2 subfolder (nested inside Output Mapping)
     { id = 16, parent = 8, type = CRSF.FOLDER, name = "PWM Ch2" },
-    { id = 17, parent = 16, type = CRSF.UINT8, name = "Failsafe",
-      value = 0, min = 0, max = 100, units = "%" },
-    { id = 18, parent = 16, type = CRSF.TEXT_SELECTION, name = "Mode",
-      options = "50Hz;60Hz;100Hz;160Hz;333Hz;400Hz", value = 0, units = "" },
+    { id = 17, parent = 16, type = CRSF.UINT8, name = "Failsafe", value = 0, min = 0, max = 100, units = "%" },
+    {
+      id = 18,
+      parent = 16,
+      type = CRSF.TEXT_SELECTION,
+      name = "Mode",
+      options = "50Hz;60Hz;100Hz;160Hz;333Hz;400Hz",
+      value = 0,
+      units = "",
+    },
 
     -- Bind Storage & Bind Mode
-    { id = 19, parent = 0, type = CRSF.TEXT_SELECTION, name = "Bind Storage",
-      options = "Persistent;Volatile;Returnable;Administered", value = 0, units = "" },
-    { id = 20, parent = 0, type = CRSF.COMMAND, name = "Enter Bind Mode",
-      status = CRSF.CMD_IDLE, timeout = 50, info = "" },
+    {
+      id = 19,
+      parent = 0,
+      type = CRSF.TEXT_SELECTION,
+      name = "Bind Storage",
+      options = "Persistent;Volatile;Returnable;Administered",
+      value = 0,
+      units = "",
+    },
+    {
+      id = 20,
+      parent = 0,
+      type = CRSF.COMMAND,
+      name = "Enter Bind Mode",
+      status = CRSF.CMD_IDLE,
+      timeout = 50,
+      info = "",
+    },
 
     -- Model Id
-    { id = 21, parent = 0, type = CRSF.INFO, name = "Model Id",
-      value = "12" },
+    { id = 21, parent = 0, type = CRSF.INFO, name = "Model Id", value = "12" },
 
     -- Info fields
-    { id = 22, parent = 0, type = CRSF.INFO, name = "RX Version",
-      value = "3.5.0 825ed8" },
+    { id = 22, parent = 0, type = CRSF.INFO, name = "RX Version", value = "3.5.0 825ed8" },
   },
 }
 
@@ -567,8 +730,8 @@ end
 local function updateFolderNames(device)
   -- TX Power folder (id=6): children Max Power (id=7), Dynamic (id=8)
   local txPwrFolder = findParam(device, 6)
-  local maxPower    = findParam(device, 7)
-  local dynamic     = findParam(device, 8)
+  local maxPower = findParam(device, 7)
+  local dynamic = findParam(device, 8)
   if txPwrFolder and maxPower then
     local pwrLabel = getOptionLabel(maxPower.options, maxPower.value or 0)
     local name = "TX Power (" .. pwrLabel
@@ -583,10 +746,10 @@ local function updateFolderNames(device)
   -- VTX Administrator folder (id=10): children Band (id=11), Channel (id=12),
   -- Pwr Lvl (id=13), Pitmode (id=14)
   local vtxFolder = findParam(device, 10)
-  local vtxBand   = findParam(device, 11)
-  local vtxChan   = findParam(device, 12)
-  local vtxPwr    = findParam(device, 13)
-  local vtxPit    = findParam(device, 14)
+  local vtxBand = findParam(device, 11)
+  local vtxChan = findParam(device, 12)
+  local vtxPwr = findParam(device, 13)
+  local vtxPit = findParam(device, 14)
   if vtxFolder and vtxBand then
     local bandVal = vtxBand.value or 0
     if bandVal == 0 then
@@ -629,10 +792,10 @@ end
 local function tlmRatioEnumToValue(enumval)
   if enumval <= 1 then
     return 1
-  end       -- Std/Off -> 1 (caller handles display)
+  end -- Std/Off -> 1 (caller handles display)
   if enumval >= 9 then
     return 1
-  end       -- Race -> same as Std
+  end -- Race -> same as Std
   -- 2=1:128 -> 128, 3=1:64 -> 64, … 8=1:2 -> 2
   -- Formula: 2^(8 + 1 - enumval)  (matching firmware: 1 << (8 + TLM_RATIO_NO_TLM - enumval))
   return math.floor(2 ^ (9 - enumval))
@@ -657,9 +820,9 @@ end
 -- Mirrors firmware updateTlmBandwidth() from TXModuleParameters.cpp.
 -- @param device  the device table (txDevice)
 local function updateTlmBandwidth(device)
-  local packetRate = findParam(device, 1)  -- Packet Rate
-  local telemRatio = findParam(device, 2)  -- Telem Ratio
-  local switchMode = findParam(device, 3)  -- Switch Mode
+  local packetRate = findParam(device, 1) -- Packet Rate
+  local telemRatio = findParam(device, 2) -- Telem Ratio
+  local switchMode = findParam(device, 3) -- Switch Mode
   if not packetRate or not telemRatio then
     return
   end
@@ -716,8 +879,8 @@ updateTlmBandwidth(txDevice)
 -- ============================================================================
 
 -- Reconnect scenario timing
-local reconnectDelay = 500  -- ~5 seconds (getTime() ticks at 10ms)
-local startTime = nil       -- set on first mockPush/mockPop call
+local reconnectDelay = 500 -- ~5 seconds (getTime() ticks at 10ms)
+local startTime = nil -- set on first mockPush/mockPop call
 
 -- Dynamic RX availability (replaces static hasRxDevice boolean)
 local function isRxAvailable()
@@ -742,13 +905,13 @@ local function getElrsFlags()
   if config.scenario == "reconnect" then
     return isRxAvailable() and 0x01 or 0x00
   elseif config.scenario == "model_mismatch" then
-    return 0x05  -- connected + model mismatch
+    return 0x05 -- connected + model mismatch
   elseif config.scenario == "armed" then
-    return 0x09  -- connected + armed
+    return 0x09 -- connected + armed
   elseif config.scenario == "normal" or config.scenario == "slow_loading" then
-    return 0x01  -- connected
+    return 0x01 -- connected
   else
-    return 0x00  -- disconnected
+    return 0x00 -- disconnected
   end
 end
 
@@ -765,7 +928,7 @@ end
 -- Command state machine (per-parameter)
 -- ============================================================================
 
-local commandStates = {}  -- keyed by "deviceId:paramId"
+local commandStates = {} -- keyed by "deviceId:paramId"
 
 local function getCommandKey(deviceId, paramId)
   return tostring(deviceId) .. ":" .. tostring(paramId)
@@ -794,7 +957,7 @@ local function handleCommandWrite(device, param, newStatus)
       state.status = CRSF.CMD_EXECUTING
       state.info = "Executing..."
       if param.persistent then
-        state.queriesRemaining = nil  -- runs until cancelled (e.g., WiFi)
+        state.queriesRemaining = nil -- runs until cancelled (e.g., WiFi)
       else
         state.queriesRemaining = COMMAND_EXECUTE_POLLS
       end
@@ -841,7 +1004,6 @@ local function mockPush(command, data)
       queuePushDeferred(CRSF.FRAMETYPE_DEVICE_INFO, encodeDeviceInfo(rxDevice, destAddr))
     end
     return true
-
   elseif command == CRSF.FRAMETYPE_PARAMETER_READ then
     -- Parameter read request: data = { deviceId, handsetId, fieldId, chunk }
     local deviceId = data[1]
@@ -868,7 +1030,7 @@ local function mockPush(command, data)
         -- Set device context for folder child ID encoding
         param._device = param._device or device
         local entry = encodeParameterEntry(device, param, chunk, destAddr)
-        param._device = nil  -- clean up temporary reference
+        param._device = nil -- clean up temporary reference
         if config.scenario == "slow_loading" then
           -- Delay response to simulate slow OTA field loading
           delayedResponseQueue[#delayedResponseQueue + 1] = {
@@ -882,7 +1044,6 @@ local function mockPush(command, data)
       end
     end
     return true
-
   elseif command == CRSF.FRAMETYPE_PARAMETER_WRITE then
     -- Parameter write: data = { deviceId, handsetId, fieldId, value/status }
     local deviceId = data[1]
@@ -894,8 +1055,7 @@ local function mockPush(command, data)
       local flags = getElrsFlags()
       local flagsInfo = getElrsFlagsInfo()
       local destAddr = data[2] or CRSF.ADDRESS_RADIO_TRANSMITTER
-      queuePush(CRSF.FRAMETYPE_ELRS_STATUS,
-        encodeElrsStatus(deviceId, destAddr, 0, 250, flags, flagsInfo))
+      queuePush(CRSF.FRAMETYPE_ELRS_STATUS, encodeElrsStatus(deviceId, destAddr, 0, 250, flags, flagsInfo))
       return true
     end
 
@@ -909,8 +1069,7 @@ local function mockPush(command, data)
           handleCommandWrite(device, param, writeValue)
           -- Queue the updated parameter entry as response
           local destAddr = data[2] or CRSF.ADDRESS_RADIO_TRANSMITTER
-          queuePush(CRSF.FRAMETYPE_PARAMETER_SETTINGS_ENTRY,
-            encodeParameterEntry(device, param, 0, destAddr))
+          queuePush(CRSF.FRAMETYPE_PARAMETER_SETTINGS_ENTRY, encodeParameterEntry(device, param, 0, destAddr))
         else
           -- Value write: update the stored value immediately (matches
           -- firmware config.Set*() which stores in RAM right away).
@@ -981,59 +1140,88 @@ local txModuleTelemetry = { TPWR = 50 }
 
 local scenarioTelemetry = {
   normal = {
-    TPWR = 50,  RFMD = 7,
-    ["1RSS"] = -87, ["2RSS"] = -93,
-    RQly = 99,  ANT = 1,
-    RxBt = 15.2, Curr = 12.5,
-    FM = "ACRO", Sats = 12, GSpd = 25.3, Alt = 142,
+    TPWR = 50,
+    RFMD = 7,
+    ["1RSS"] = -87,
+    ["2RSS"] = -93,
+    RQly = 99,
+    ANT = 1,
+    RxBt = 15.2,
+    Curr = 12.5,
+    FM = "ACRO",
+    Sats = 12,
+    GSpd = 25.3,
+    Alt = 142,
   },
   armed = {
-    TPWR = 250, RFMD = 7,
-    ["1RSS"] = -78, ["2RSS"] = -82,
-    RQly = 100, ANT = 0,
-    RxBt = 14.8, Curr = 28.5,
-    FM = "ACRO", Sats = 14, GSpd = 42.7, Alt = 85,
+    TPWR = 250,
+    RFMD = 7,
+    ["1RSS"] = -78,
+    ["2RSS"] = -82,
+    RQly = 100,
+    ANT = 0,
+    RxBt = 14.8,
+    Curr = 28.5,
+    FM = "ACRO",
+    Sats = 14,
+    GSpd = 42.7,
+    Alt = 85,
   },
   model_mismatch = {
-    TPWR = 50,  RFMD = 7,
-    ["1RSS"] = -90, ["2RSS"] = -95,
-    RQly = 95,  ANT = 1,
-    RxBt = 15.8, Curr = 0.5,
+    TPWR = 50,
+    RFMD = 7,
+    ["1RSS"] = -90,
+    ["2RSS"] = -95,
+    RQly = 95,
+    ANT = 1,
+    RxBt = 15.8,
+    Curr = 0.5,
   },
   reconnect = {
     -- Same as normal; only served when isRxAvailable() is true
-    TPWR = 50,  RFMD = 7,
-    ["1RSS"] = -87, ["2RSS"] = -93,
-    RQly = 99,  ANT = 1,
-    RxBt = 15.2, Curr = 12.5,
+    TPWR = 50,
+    RFMD = 7,
+    ["1RSS"] = -87,
+    ["2RSS"] = -93,
+    RQly = 99,
+    ANT = 1,
+    RxBt = 15.2,
+    Curr = 12.5,
   },
   slow_loading = {
     -- Same as normal; fields load slowly but telemetry is available
-    TPWR = 50,  RFMD = 7,
-    ["1RSS"] = -87, ["2RSS"] = -93,
-    RQly = 99,  ANT = 1,
-    RxBt = 15.2, Curr = 12.5,
-    FM = "ACRO", Sats = 12, GSpd = 25.3, Alt = 142,
+    TPWR = 50,
+    RFMD = 7,
+    ["1RSS"] = -87,
+    ["2RSS"] = -93,
+    RQly = 99,
+    ANT = 1,
+    RxBt = 15.2,
+    Curr = 12.5,
+    FM = "ACRO",
+    Sats = 12,
+    GSpd = 25.3,
+    Alt = 142,
   },
 }
 
 -- Jitter ranges for sensors that fluctuate in real life.
 -- Sensors not listed (TPWR, RFMD, ANT, FM, Sats) stay static.
 local sensorJitter = {
-  ["1RSS"] = 3,     -- +/- 3 dBm
+  ["1RSS"] = 3, -- +/- 3 dBm
   ["2RSS"] = 3,
-  RQly     = 2,     -- +/- 2%
-  RxBt     = 0.05,  -- +/- 0.05V
-  Curr     = 2.0,   -- +/- 2A
-  GSpd     = 3.0,
-  Alt      = 5,
+  RQly = 2, -- +/- 2%
+  RxBt = 0.05, -- +/- 0.05V
+  Curr = 2.0, -- +/- 2A
+  GSpd = 3.0,
+  Alt = 5,
 }
 
 -- Telemetry values are cached and only refreshed once per second to match
 -- realistic sensor update rates and avoid excessive CPU in the simulator.
 local telemetryCache = {}
 local lastTelemetryUpdate = 0
-local TELEMETRY_UPDATE_TICKS = 100  -- 100 ticks = 1 second (getTime() at 10ms/tick)
+local TELEMETRY_UPDATE_TICKS = 100 -- 100 ticks = 1 second (getTime() at 10ms/tick)
 
 local function updateTelemetryCache()
   local now = getTime()

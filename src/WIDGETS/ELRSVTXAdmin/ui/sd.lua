@@ -14,28 +14,28 @@ local WidgetUI = {}
 
 -- Breakpoints: absolute pixel values for 480x272.
 WidgetUI.breakpoints = {
-  topBarW  = 100,
-  sixthH   = 50,
+  topBarW = 100,
+  sixthH = 50,
   quarterH = 70,
-  thirdH   = 100,
-  halfH    = 125,
+  thirdH = 100,
+  halfH = 125,
 }
 
 WidgetUI.fonts = {
-  sixth   = { status = BOLD },
+  sixth = { status = BOLD },
   quarter = { status = BOLD },
-  third   = { status = BOLD },
-  half    = { hero = BOLD, detail = SMLSIZE },
-  full    = { hero = MIDSIZE, detail = SMLSIZE },
+  third = { status = BOLD },
+  half = { hero = BOLD, detail = SMLSIZE },
+  full = { hero = MIDSIZE, detail = SMLSIZE },
 }
-
 
 -- ============================================================================
 -- Minimized layout builders (by widget height tier)
 -- ============================================================================
 
 local TopBarUI = loadScript("/WIDGETS/ELRSVTXAdmin/ui/topbar.lua")({
-  Protocol = Protocol, VTX = VTX,
+  Protocol = Protocol,
+  VTX = VTX,
 })
 
 --- 1/6: single row. Wide: band + detail + cheatsheet. Narrow: band + detail.
@@ -268,12 +268,18 @@ function WidgetUI.build(wgtZone, opts)
   local w, h = wgtZone.w, wgtZone.h
   local opa = bgOpacity(opts)
   local bp = WidgetUI.breakpoints
-  if     w < bp.topBarW  then TopBarUI.build(w, h)
-  elseif h < bp.sixthH   then WidgetUI.buildSixth(w, h, opa)
-  elseif h < bp.quarterH then WidgetUI.buildQuarter(w, h, opa)
-  elseif h < bp.thirdH   then WidgetUI.buildThird(w, h, opa)
-  elseif h < bp.halfH    then WidgetUI.buildHalf(w, h, opa)
-  else                         WidgetUI.buildFull(w, h, opa)
+  if w < bp.topBarW then
+    TopBarUI.build(w, h)
+  elseif h < bp.sixthH then
+    WidgetUI.buildSixth(w, h, opa)
+  elseif h < bp.quarterH then
+    WidgetUI.buildQuarter(w, h, opa)
+  elseif h < bp.thirdH then
+    WidgetUI.buildThird(w, h, opa)
+  elseif h < bp.halfH then
+    WidgetUI.buildHalf(w, h, opa)
+  else
+    WidgetUI.buildFull(w, h, opa)
   end
 end
 

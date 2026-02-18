@@ -15,19 +15,19 @@ local WidgetUI = {}
 -- Breakpoints: absolute pixel values for 320x240.
 -- Smallest color screen — everything is compact.
 WidgetUI.breakpoints = {
-  topBarW  = 80,
-  sixthH   = 38,
+  topBarW = 80,
+  sixthH = 38,
   quarterH = 54,
-  thirdH   = 76,
-  halfH    = 100,
+  thirdH = 76,
+  halfH = 100,
 }
 
 WidgetUI.fonts = {
-  sixth   = { status = BOLD },
+  sixth = { status = BOLD },
   quarter = { status = BOLD },
-  third   = { status = BOLD },
-  half    = { hero = BOLD, detail = SMLSIZE },
-  full    = { hero = MIDSIZE, detail = SMLSIZE },
+  third = { status = BOLD },
+  half = { hero = BOLD, detail = SMLSIZE },
+  full = { hero = MIDSIZE, detail = SMLSIZE },
 }
 
 local function pitModeColor()
@@ -59,7 +59,8 @@ end
 -- ============================================================================
 
 local TopBarUI = loadScript("/WIDGETS/ELRSVTXAdmin/ui/topbar.lua")({
-  Protocol = Protocol, VTX = VTX,
+  Protocol = Protocol,
+  VTX = VTX,
 })
 
 --- 1/6: single row with band + status + power + pit mode + cheatsheet.
@@ -328,12 +329,18 @@ function WidgetUI.build(wgtZone, opts)
   local w, h = wgtZone.w, wgtZone.h
   local opa = bgOpacity(opts)
   local bp = WidgetUI.breakpoints
-  if     w < bp.topBarW  then TopBarUI.build(w, h)
-  elseif h < bp.sixthH   then WidgetUI.buildSixth(w, h, opa)
-  elseif h < bp.quarterH then WidgetUI.buildQuarter(w, h, opa)
-  elseif h < bp.thirdH   then WidgetUI.buildThird(w, h, opa)
-  elseif h < bp.halfH    then WidgetUI.buildHalf(w, h, opa)
-  else                         WidgetUI.buildFull(w, h, opa)
+  if w < bp.topBarW then
+    TopBarUI.build(w, h)
+  elseif h < bp.sixthH then
+    WidgetUI.buildSixth(w, h, opa)
+  elseif h < bp.quarterH then
+    WidgetUI.buildQuarter(w, h, opa)
+  elseif h < bp.thirdH then
+    WidgetUI.buildThird(w, h, opa)
+  elseif h < bp.halfH then
+    WidgetUI.buildHalf(w, h, opa)
+  else
+    WidgetUI.buildFull(w, h, opa)
   end
 end
 
