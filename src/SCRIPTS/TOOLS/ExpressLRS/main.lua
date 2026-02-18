@@ -1,4 +1,4 @@
--- TNS|ExpressLRS1|TNE
+-- TNS|ExpressLRS_WM|TNE
 ---- #########################################################################
 ---- #                                                                       #
 ---- # Copyright (C) OpenTX, adapted for ExpressLRS                          #
