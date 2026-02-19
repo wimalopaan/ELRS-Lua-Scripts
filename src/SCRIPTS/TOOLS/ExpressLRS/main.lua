@@ -8,7 +8,7 @@
 ---- # Unified tool for BW and color LCD radios (EdgeTX 2.11+)               #
 ---- #########################################################################
 
-local VERSION = "r2"
+local VERSION = "r2.wm"
 local useLvgl = (lvgl ~= nil)
 
 -- ============================================================================
