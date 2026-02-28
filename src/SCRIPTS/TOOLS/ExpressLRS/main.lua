@@ -1,4 +1,4 @@
--- TNS|ExpressLRS1|TNE
+-- TNS|ExpressLRS_WM|TNE
 ---- #########################################################################
 ---- #                                                                       #
 ---- # Copyright (C) OpenTX, adapted for ExpressLRS                          #
@@ -8,7 +8,7 @@
 ---- # Unified tool for BW and color LCD radios (EdgeTX 2.11+)               #
 ---- #########################################################################
 
-local VERSION = "r2"
+local VERSION = "r2_WM"
 local useLvgl = (lvgl ~= nil)
 
 -- ============================================================================

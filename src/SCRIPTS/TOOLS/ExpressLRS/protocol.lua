@@ -751,7 +751,8 @@ function Protocol.tick()
 
   local time = getTime()
   -- Periodic ping for initial device discovery
-  if #Protocol.devices == 0 and time > Protocol.pingTimeout then
+  --  if #Protocol.devices == 0 and time > Protocol.pingTimeout then
+  if time > Protocol.pingTimeout then
     Protocol.pingDevices()
     Protocol.pingTimeout = time + 100 -- 1s
   end
