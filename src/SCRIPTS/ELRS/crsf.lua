@@ -22,11 +22,11 @@ local CRSF = {}
 
 CRSF.CONST = {
   -- Addresses
-  ADDRESS_BROADCAST = 0x00,
-  ADDRESS_HANDSET = 0xEA, -- EdgeTX's official handset address
   ADDRESS_RX = 0xEC,
-  ADDRESS_TX = 0xEE,
-  ADDRESS_HANDSET_ELRS = 0xEF, -- ELRS-custom Lua device address, not standard CRSF
+  ADDRESS_TX_MODULE = 0xEE,
+  ADDRESS_HANDSET = 0xEF,
+  ADDRESS_BROADCAST = 0x00,
+  ADDRESS_RADIO_TRANSMITTER = 0xEA,
 
   -- Frame types
   FRAMETYPE_DEVICE_PING = 0x28,
@@ -35,6 +35,10 @@ CRSF.CONST = {
   FRAMETYPE_PARAMETER_READ = 0x2C,
   FRAMETYPE_PARAMETER_WRITE = 0x2D,
   FRAMETYPE_ELRS_STATUS = 0x2E,
+  FRAMETYPE_COMMAND = 0x32,
+  FRAMETYPE_MSP_REQ = 0x7A,
+  FRAMETYPE_MSP_RESP = 0x7B,
+  FRAMETYPE_MSP_WRITE = 0x7C,
 
   -- Field types (for parsing PARAMETER_SETTINGS_ENTRY responses)
   FIELD_UINT8 = 0,
@@ -59,6 +63,15 @@ CRSF.CONST = {
 
   -- Module type for model.getModule() check
   MODULE_TYPE_CROSSFIRE = 5,
+
+  -- FRAMETYPE_COMMAND subcommands
+  COMMAND = {
+    SUBCMD_RX = {
+      ID = 0x10,
+      -- CMDS
+      BIND = 0x01,
+    },
+  },
 }
 
 -- ============================================================================
@@ -70,6 +83,9 @@ CRSF._handlers = {}
 
 -- Device info cache (populated by built-in DEVICE_INFO handler)
 CRSF.deviceInfo = {}
+
+-- True if receiving telemetry, set by poll() so do call this before checking
+CRSF.isConnected = nil
 
 -- Telemetry state (populated by built-in ELRS_STATUS handler)
 CRSF.hasTelemetry = false
@@ -199,6 +215,9 @@ function CRSF:poll()
   end
   self._lastPollTick = now
 
+  local LQ = getValue("RQly")
+  self.isConnected = LQ and LQ > 0 or nil
+
   while true do
     local command, data = CRSF.pop()
     if command == nil then
@@ -242,7 +261,7 @@ function CRSF:requestDeviceInfo()
     return
   end
   self._lastDevPoll = now
-  CRSF.push(CRSF.CONST.FRAMETYPE_DEVICE_PING, { CRSF.CONST.ADDRESS_BROADCAST, CRSF.CONST.ADDRESS_HANDSET })
+  CRSF.push(CRSF.CONST.FRAMETYPE_DEVICE_PING, { CRSF.CONST.ADDRESS_BROADCAST, CRSF.CONST.ADDRESS_RADIO_TRANSMITTER })
 end
 
 --- Request ELRS status from the TX module (PARAMETER_WRITE with fieldId=0).
@@ -254,7 +273,18 @@ function CRSF:requestElrsStatus()
     return
   end
   self._lastStatusPoll = now
-  CRSF.push(CRSF.CONST.FRAMETYPE_PARAMETER_WRITE, { CRSF.CONST.ADDRESS_TX, CRSF.CONST.ADDRESS_HANDSET_ELRS, 0, 0 })
+  CRSF.push(CRSF.CONST.FRAMETYPE_PARAMETER_WRITE, { CRSF.CONST.ADDRESS_TX_MODULE, CRSF.CONST.ADDRESS_HANDSET, 0, 0 })
+end
+
+-- Send a BIND command to the dest ADDR (default TX)
+-- Sending to RX unbinds if connected, sending to TX transmits a packet to bind a waiting RX
+function CRSF.sendBind(dest)
+  CRSF.push(CRSF.CONST.FRAMETYPE_COMMAND, {
+    dest or CRSF.CONST.ADDRESS_TX_MODULE,
+    CRSF.CONST.ADDRESS_HANDSET,
+    CRSF.CONST.COMMAND.SUBCMD_RX.ID,
+    CRSF.CONST.COMMAND.SUBCMD_RX.BIND,
+  })
 end
 
 -- ============================================================================
@@ -263,7 +293,7 @@ end
 
 -- DEVICE_INFO handler: parses and caches module name, version, RFMOD/RFRSSI
 local function onDeviceInfo(data)
-  if data[2] ~= CRSF.CONST.ADDRESS_TX then
+  if data[2] ~= CRSF.CONST.ADDRESS_TX_MODULE then
     return
   end
 
